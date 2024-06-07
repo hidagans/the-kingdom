@@ -13,7 +13,7 @@ class FILTERS:
     ME_OWNER = filters.me & filters.user(ADMINS)
 
 class KINGDOM:
-    def BOT(command, filter=FILTERS.ME):
+    def CMD(command, filter=FILTERS.ME):
         def wrapper(func):
             @bot.on_message(filters.command(command) & filter)
             async def wrapped_func(client, message):
