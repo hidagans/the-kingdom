@@ -8,6 +8,7 @@ db = mongo_client.kingdom
 
 # variable mongo
 userstartdb = db.userstart
+character_profiledb = db.characte_profiledb
 
 
 
@@ -41,3 +42,22 @@ async def add_served_user(user_id: int):
     if is_served:
         return
     return await userstartdb.insert_one({"user_id": user_id})
+
+
+
+#character profile database
+async def get_character_profile(user_id):
+    try:
+        character_data = await character_profiledb.find_one({"user_id": user_id})
+        return character_data
+    except Exception as e:
+        print(f"Error in get_character_profile function: {e}")
+        return None
+
+async def save_character_profile(user_id, profile_name):
+    data = await get_character_profile(user_id)
+    if not data:
+        await character_profiledb.update_one({"user_id": user_id}, {"$set": {'profile_name': profile_name}}, upsert=True)
+
+
+
