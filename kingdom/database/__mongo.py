@@ -11,9 +11,6 @@ userstartdb = db.userstart
 character_profiledb = db.character_profiledb
 character_statsdb = db.character_statsdb
 
-
-
-
 #character profile database
 async def get_character_profile(user_id):
     try:
