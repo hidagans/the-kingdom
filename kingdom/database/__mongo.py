@@ -8,8 +8,8 @@ db = mongo_client.kingdom
 
 # variable mongo
 userstartdb = db.userstart
-character_profiledb = db.characte_profiledb
-
+character_profiledb = db.character_profiledb
+character_statsdb = db.character_statsdb
 
 
 
@@ -58,6 +58,12 @@ async def save_character_profile(user_id, profile_name):
     data = await get_character_profile(user_id)
     if not data:
         await character_profiledb.update_one({"user_id": user_id}, {"$set": {'profile_name': profile_name}}, upsert=True)
+
+
+#chracter stats database
+async def save_character_stats(user_id, stats):    
+    await character_statsdb.update_one({"user_id": user_id}, {"$set": {"stats": stats}})
+
 
 
 
