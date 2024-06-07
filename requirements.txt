@@ -1,0 +1,6 @@
+git+https://github.com/Xcilik/pyrofork.git
+python-dotenv
+TgCrypto
+motor
+xendit
+pyromod
