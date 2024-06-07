@@ -8,8 +8,8 @@ from kingdom.core import KINGDOM, FILTERS, subcribe
 @KINGDOM.CMD("start", FILTERS.PRIVATE)
 @subcribe
 async def start(client, message):
-    await add_served_user(user_id)    
     user_id = message.from_user.id
+    await add_served_user(user_id)    
     character_profile = await get_character_profile(user_id)
     
     home_button = [
