@@ -8,9 +8,6 @@ class FILTERS:
     GROUP = filters.group
     PRIVATE = filters.private
     OWNER = filters.user(ADMINS)
-    ME_PRIVATE = filters.me & filters.private
-    ME_GROUP = filters.me & filters.group
-    ME_OWNER = filters.me & filters.user(ADMINS)
 
 class KINGDOM:
     def CMD(command, filter=FILTERS.ME):
