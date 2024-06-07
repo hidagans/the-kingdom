@@ -22,7 +22,7 @@ async def start(client, message):
         ]
     ]
     if character_profile:
-        await message.reply("Selamat datang kembali! Ini profil Anda:", reply_markup=InlineKeyboardMarkup(buttons))
+        await message.reply("Selamat datang kembali! Ini profil Anda:", reply_markup=InlineKeyboardMarkup(home_button))
     else:
         await message.reply("Halo! Anda belum mendaftar. Silakan buat karakter Anda dengan mengirim pesan /daftar.")
     
