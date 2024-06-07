@@ -1,4 +1,4 @@
-from .__mongodb import *
+from .__mongo import *
 
 
 async def is_served_user(user_id: int) -> bool:
