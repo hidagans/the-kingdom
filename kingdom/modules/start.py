@@ -2,7 +2,7 @@ import asyncio
 
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from kingdom.database import add_served_user
-from kingdom.core import KINGDOM, FILTERS, subscribe
+from kingdom.core import KINGDOM, FILTERS, subcribe
 
 
 @KINGDOM.CMD("start", FILTERS.PRIVATE)
