@@ -1,6 +1,7 @@
 from pyrogram.types import *
 import asyncio
-from kingdom.database import *
+from kingdom.database import maps as map
+
 def create_map_list_inline_keyboard(maps):
     keyboard = []
     for map_entry in maps:
@@ -9,9 +10,10 @@ def create_map_list_inline_keyboard(maps):
     keyboard.append([InlineKeyboardButton("BACK", callback_data="start")])
     return InlineKeyboardMarkup(keyboard)
 
+
 async def respawn_resources():
     while True:
-        maps = await maps.find().to_list(length=None)
+        maps = await map.find().to_list(length=None)
         material_data = await material.find().to_list(length=None)
         quantity_items = {material['name']: material['quantity'] for material in material_data}
         
