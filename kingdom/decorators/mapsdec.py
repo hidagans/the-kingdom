@@ -1,6 +1,6 @@
 from pyrogram.types import *
 import asyncio
-from kingdom.database import maps as map
+from kingdom.database import maps as map, material
 
 def create_map_list_inline_keyboard(maps):
     keyboard = []
