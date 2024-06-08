@@ -14,7 +14,7 @@ from pyromod import listen
 from config import *
 
 logging.basicConfig(
-    level=logging.ERROR,
+    level=logging.INFO,
     format="[ %(levelname)s ] - %(name)s - %(message)s",
     datefmt="%d-%b-%y %H:%M:%S",
     handlers=[
