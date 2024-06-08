@@ -20,7 +20,7 @@ from pytgcalls.__version__ import __version__ as pytgver
 
 from kingdom import bot
 from kingdom.database import *
-from kingdom.core import KINGDOM, FILTERS
+from kingdom.core import KING, FILTERS
 
 
 async def aexec(code, client, message):
@@ -35,7 +35,7 @@ async def aexec(code, client, message):
 
 
 
-@KINGDOM.CMD("update", FILTERS.OWNER)
+@KING.CMD("update", FILTERS.OWNER)
 async def update(_, message):
     try:
         out = subprocess.check_output(["git", "pull"]).decode("UTF-8")
@@ -48,7 +48,7 @@ async def update(_, message):
     os.system(f"kill -9 {os.getpid()} && bash start")
 
 
-@KINGDOM.CMD("restart", FILTERS.OWNER)
+@KING.CMD("restart", FILTERS.OWNER)
 async def restart(_, message):
       try:
           await message.reply("Bot restarted ✅")
@@ -57,7 +57,7 @@ async def restart(_, message):
           await message.reply(e)
 
 
-@KINGDOM.CMD("eval", FILTERS.OWNER)
+@KING.CMD("eval", FILTERS.OWNER)
 async def evaluate(client, message):
     try:
         cmd = message.text.split(" ", maxsplit=1)[1]
@@ -101,7 +101,7 @@ async def evaluate(client, message):
         await message.reply(final_output)
 
 
-@KINGDOM.CMD("br|broadcast", FILTERS.OWNER)
+@KING.CMD("br|broadcast", FILTERS.OWNER)
 async def bruser_message(client, message):
     if message.reply_to_message:
         x = message.reply_to_message.id
@@ -136,7 +136,7 @@ async def bruser_message(client, message):
         pass
 
 
-@KINGDOM.CMD("shell|sh", FILTERS.OWNER)
+@KING.CMD("shell|sh", FILTERS.OWNER)
 async def example_edit(client, message):
     if not message.reply_to_message and len(message.command) == 1:
         return await message.reply("Specify the command in message text or in reply")
@@ -199,13 +199,13 @@ async def example_edit(client, message):
     cmd_obj.kill()
 
 
-@KINGDOM.CMD("stats", FILTERS.OWNER)
+@KING.CMD("stats", FILTERS.OWNER)
 async def bruser_stats(client, message):
     stats = len(await get_served_users())
     await message.reply(f"Stats user: {stats}")
 
 
-@KINGDOM.CMD("sistem", FILTERS.OWNER)
+@KING.CMD("sistem", FILTERS.OWNER)
 async def sistem_stats(client, message):
     sc = platform.system()
     p_core = psutil.cpu_count(logical=False)
