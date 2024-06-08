@@ -6,3 +6,6 @@ from .mapsdb import *
 from .dungeondb import *
 from .factiondb import *
 from .gatheringdb import *
+from .guilddb import *
+from .worldbossdb import *
+from .pvpdb import *

@@ -7,7 +7,7 @@ import asyncio
 from pyrogram.types import *
 from config import *
 
-@KINGDOM.CALLBACK("faction_konten")
+@KING.CALL("faction_konten")
 async def outpost_konten(client, callback_query):
     location = callback_query.message.chat.id
     outposts_cursor = get_outpost(location)
@@ -29,7 +29,7 @@ async def outpost_konten(client, callback_query):
     outpost_list_inline_keyboard = InlineKeyboardMarkup(buttons)
     await callback_query.edit_message_text(f"Total outposts available: {total_outposts}\n\nPilih Outpost:", reply_markup=outpost_list_inline_keyboard)
 
-@KINGDOM.CMD("register_faction")
+@KING.CMD("register_faction")
 async def register_faction(client, message):
     user_id = message.from_user.id
     args = message.text.split()
@@ -58,7 +58,7 @@ async def register_faction(client, message):
         print(f"Error in register_faction: {e}")
         await message.reply_text("An error occurred while registering in the faction.")
 
-@KINGDOM.CALLBACK(r"attack:(.+)")
+@KING.CALL(r"attack:(.+)")
 async def attack_outpost_command(client, callback_query):
     user_id = callback_query.from_user.id
     data = callback_query.data.split(":")
@@ -115,7 +115,7 @@ async def attack_outpost_command(client, callback_query):
         await change_outpost_faction(outpost_id, user['faction_id'])
         await callback_query.edit_message_text(f"Congratulations! You have successfully captured the outpost!")
 
-@KINGDOM.CMD("outpost_status")
+@KING.CMD("outpost_status")
 async def outpost_status_command(client, message):
     args = message.text.split()
     if len(args) < 2:
@@ -145,7 +145,7 @@ async def outpost_status_command(client, message):
 
     await message.reply_text(status_message)
 
-@KINGDOM.CMD("add_outpost")
+@KING.CMD("add_outpost")
 async def add_outpost_command(client, message):
     args = message.text.split(maxsplit=2)
     if len(args) < 3:

@@ -1,10 +1,10 @@
-from kingdom import bot
+from kingdom.core import *
 from kingdom.database import *
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import random
 
-@bot.on_callback_query(filters.regex("black_market"))
+@KING.CALLBACK("black_market")
 async def black_market(client, callback_query):
     user_id = callback_query.from_user.id
     character = await get_character_profile(user_id)
@@ -25,7 +25,7 @@ async def black_market(client, callback_query):
     
     await callback_query.edit_message_text("Black Market", reply_markup=black_market_markup)
 
-@bot.on_callback_query(filters.regex("black_market_menu"))
+@KING.CALLBACK("black_market_menu")
 async def black_market_menu(client, callback_query):
     location = -1002074292027
     map_data = await get_maps(location)
@@ -44,7 +44,7 @@ async def black_market_menu(client, callback_query):
         ])
         await callback_query.edit_message_text("You are not in the correct location.", reply_markup=back_markup)
 
-@bot.on_message(filters.command("sell_item"))
+@KING.CMD("sell_item")
 async def sell_item(client, message):
     try:
         command_parts = message.text.split(' ', 1)
@@ -88,7 +88,7 @@ async def sell_item(client, message):
         print(f"Error in sell_item: {e}")
         await message.reply_text("Terjadi kesalahan saat menjual item.")
 
-@bot.on_callback_query(filters.regex("travel_to_nightshade"))
+@KING.CALLBACK("travel_to_nightshade")
 async def travel_to_nightshade(client, callback_query):
     user_id = callback_query.from_user.id
     character = await get_character_profile(user_id)

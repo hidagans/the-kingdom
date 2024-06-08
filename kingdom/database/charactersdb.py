@@ -1,4 +1,6 @@
 from .__mongo import *
+import random
+import string
 
 async def get_character_profile(user_id):
     try:
@@ -198,3 +200,26 @@ async def add_skill_points(user_id, amount):
     except Exception as e:
         print(f"Error in add_skill_points function: {e}")
         return False, None
+    
+async def create_token(user_id):
+    character_profile = await get_character_profile(user_id)
+    token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    if character_profile:
+        character_profile['tokentol'] = token
+
+        await characters.update_one({"user_id": user_id}, character_profile)
+    # Simpan token dalam dictionary tokens dengan user_id sebagai kuncinya
+    return token
+
+async def delete_token(user_id):
+    character_profile = await get_character_profile(user_id)
+    token = await characters.find_one({"user_id": user_id, "tokentol": token})
+    if character_profile:
+        await characters.delete_one()
+
+async def update_token(user_id):
+    characters_profile = await get_character_profile(user_id)
+    token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+    if characters_profile:
+        characters_profile['tokentol'] = token
+        await characters.replace_one({"user_id": user_id}, characters_profile)

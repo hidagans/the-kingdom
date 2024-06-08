@@ -9,7 +9,7 @@ class FILTERS:
     PRIVATE = filters.private
     OWNER = filters.user(ADMINS)
 
-class KINGDOM:
+class KING:
     def CMD(command, filter=FILTERS.ME):
         def wrapper(func):
             @bot.on_message(filters.command(command) & filter)
@@ -30,7 +30,7 @@ class KINGDOM:
 
         return wrapper
 
-    def CALLBACK(command):
+    def CALL(command):
         def wrapper(func):
             @bot.on_callback_query(filters.regex(command))
             async def wrapped_func(client, message):

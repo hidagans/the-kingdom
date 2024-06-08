@@ -6,7 +6,7 @@ from config import ADMINS
 from datetime import datetime, timedelta
 
 # Fungsi untuk menampilkan opsi crafting
-@bot.on_message(filters.command("craft"))
+@KING.CMD("craft")
 async def craft_menu(client, message):
     buttons = [
         [InlineKeyboardButton("Craft Gathering Tool", callback_data="craft_gathering_tool")],
@@ -15,7 +15,7 @@ async def craft_menu(client, message):
     await message.reply_text("Choose an item to craft:", reply_markup=InlineKeyboardMarkup(buttons))
 
 # Fungsi untuk menampilkan opsi alat gathering
-@bot.on_callback_query(filters.regex("craft_gathering_tool"))
+@KING.CALL("craft_gathering_tool")
 async def craft_gathering_tool(client, callback_query):
     buttons = [
         [InlineKeyboardButton("Craft Pickaxe", callback_data="craft_tool:pickaxe")],
@@ -26,7 +26,7 @@ async def craft_gathering_tool(client, callback_query):
     await callback_query.edit_message_text("Choose a gathering tool to craft:", reply_markup=InlineKeyboardMarkup(buttons))
 
 # Fungsi untuk memulai crafting alat
-@bot.on_callback_query(filters.regex(r"craft_tool:(.+)"))
+@KING.CALL(r"craft_tool:(.+)")
 async def craft_tool(client, callback_query):
     user_id = callback_query.from_user.id
     tool_type = callback_query.data.split(":")[1]
@@ -80,7 +80,7 @@ async def craft_tool(client, callback_query):
     await callback_query.edit_message_text("Crafting complete! What would you like to do next?", reply_markup=InlineKeyboardMarkup(buttons))
 
 # Fungsi untuk menampilkan inventory pemain
-@bot.on_message(filters.command("inventory"))
+@KING.CMD("inventory")
 async def show_inventory(client, message):
     user_id = message.from_user.id
     inventory = await sumber_daya.find_one({"user_id": user_id})
@@ -97,7 +97,7 @@ async def show_inventory(client, message):
     await message.reply_text(inventory_text)
 
 # Fungsi untuk menambahkan bahan ke inventory (untuk testing/admin)
-@bot.on_message(filters.command("add_resource") & filters.user(ADMINS))
+@KING.CMD("add_resource", FILTERS.OWNER)
 async def add_resource(client, message):
     if len(message.command) < 3:
         await message.reply_text("Usage: /add_resource <resource_name> <quantity>")
@@ -120,7 +120,7 @@ async def add_resource(client, message):
     await message.reply_text(f"Added {quantity} {resource_name} to your inventory.")
 
 # Fungsi untuk menambahkan merchant
-@bot.on_message(filters.command("add_merchant") & filters.user(ADMINS))
+@KING.CMD("add_merchant", FILTERS.OWNER)
 async def add_merchant(client, message):
     if len(message.command) < 2:
         await message.reply_text("Usage: /add_merchant <merchant_name>")
@@ -140,7 +140,7 @@ async def add_merchant(client, message):
     await message.reply_text(f"Merchant '{merchant_name}' telah ditambahkan dengan ID {group_id}.")
 
 # Fungsi untuk memulai lelang merchant
-@bot.on_message(filters.command("start_auction") & filters.user(ADMINS))
+@KING.CMD("start_auction", FILTERS.OWNER)
 async def start_auction(client, message):
     if len(message.command) < 2:
         await message.reply_text("Usage: /start_auction <merchant_name>")
@@ -160,8 +160,7 @@ async def start_auction(client, message):
     await pelelangan.insert_one({"merchant_name": merchant_name, "highest_bid": 0, "highest_bidder": None, "end_time": datetime.utcnow() + timedelta(days=2)})
     await message.reply_text(f"Auction for '{merchant_name}' has started. Use /bid <amount> to place a bid.")
 
-# Fungsi untuk menempatkan bid di lelang
-@bot.on_message(filters.command("bid"))
+@KING.CMD("bid")
 async def place_bid(client, message):
     if len(message.command) < 2:
         await message.reply_text("Usage: /bid <amount>")
@@ -194,8 +193,7 @@ async def place_bid(client, message):
     await pelelangan.update_one({"_id": current_auction["_id"]}, {"$set": {"highest_bid": amount, "highest_bidder": user_id}})
     await message.reply_text(f"Your bid of {amount} gold has been placed.")
 
-# Fungsi untuk menyelesaikan lelang
-@bot.on_message(filters.command("end_auction") & filters.user(ADMINS))
+@KING.CMD("end_auction", FILTERS.OWNER)
 async def end_auction(client, message):
     current_auction = await pelelangan.find_one({}, sort=[("end_time", -1)])
     
@@ -214,8 +212,7 @@ async def end_auction(client, message):
     
     await pelelangan.delete_one({"_id": current_auction["_id"]})
 
-# Fungsi untuk crafting/refining resource di merchant
-@bot.on_message(filters.command("refine"))
+@KING.CMD("refine")
 async def refine_resource(client, message):
     user_id = message.from_user.id
     user = await get_character_profile(user_id)

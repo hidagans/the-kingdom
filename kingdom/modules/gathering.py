@@ -6,14 +6,14 @@ from kingdom.database import *
 import asyncio
 from config import ADMINS
 
-@bot.on_callback_query(filters.regex("cb_gathering_konten"))
+@KING.CALL("cb_gathering_konten")
 async def cb_gathering_konten(client, callback_query):
     buttons = [
         [InlineKeyboardButton("SHOW RESOURCE", callback_data="show_resource")]
     ]
     await callback_query.edit_message_text("Show resource untuk melihat sumber daya yang tersedia di lokasi ini", reply_markup=InlineKeyboardMarkup(buttons))
 
-@bot.on_callback_query(filters.regex(r"start_gathering:(.+)"))
+@KING.CALL(r"start_gathering:(.+)")
 async def gathering_konten(client, callback_query):
     location = callback_query.data.split(":")[1]
     spots = await show_gathering_spots(location)
@@ -35,7 +35,7 @@ async def gathering_konten(client, callback_query):
     reply_text = "Pilih gathering spot yang ingin Anda kumpulkan:"
     await callback_query.edit_message_text(reply_text, reply_markup=reply_markup)
 
-@bot.on_callback_query(filters.regex(r"gather:(.+)"))
+@KING.CALL(r"gather:(.+)")
 async def gather_action_callback(client, callback_query):
     data = callback_query.data.split(":")
     spot_index = int(data[1])
@@ -76,7 +76,7 @@ async def gather_action_callback(client, callback_query):
     else:
         await callback_query.message.reply_text("Terjadi kesalahan saat menyelesaikan gathering.")
 
-@bot.on_callback_query(filters.regex("show_resource"))
+@KING.CALL("show_resource")
 async def show_gathering_spots_command(client, callback_query):
     location = callback_query.message.chat.id
     map_data = await maps.find_one({"location": location})
@@ -108,29 +108,3 @@ async def show_gathering_spots_command(client, callback_query):
         reply_markup = None
 
     await callback_query.edit_message_text(response_message, reply_markup=reply_markup)
-
-# Fungsi untuk respawn sumber daya
-async def respawn_resources():
-    while True:
-        maps = await maps.find().to_list(length=None)
-        material_data = await material.find().to_list(length=None)
-        quantity_items = {material['name']: material['quantity'] for material in material_data}
-        
-        for map_data in maps:
-            for spot in map_data.get("spots", []):
-                max_quantity = quantity_items.get(spot['resource'], spot.get('max_quantity', 10))  # Assume a default max quantity
-                if spot['quantity'] < max_quantity:
-                    # Determine respawn rate based on tier
-                    resource_tier = spot.get('tier', 1)
-                    respawn_time = RESPAWN_TIMES.get(resource_tier, timedelta(minutes=10))
-                    last_gathered_time = spot.get('last_gathered_time', datetime.min)
-
-                    if datetime.now() >= last_gathered_time + respawn_time:
-                        spot['quantity'] = min(spot['quantity'] + 1, max_quantity)
-                        spot['last_gathered_time'] = datetime.now()
-                        
-            await maps.update_one({"_id": map_data["_id"]}, {"$set": {"spots": map_data["spots"]}})
-        
-        await asyncio.sleep(60)  # Check every minute
-
-asyncio.create_task(respawn_resources())
