@@ -29,7 +29,7 @@ async def show_stats_command(client, callback_query):
     await callback_query.edit_message_text(reply_text, reply_markup=reply_markup)
 
 # Callback for showing user profile
-@KING.CALL("MY PROFILE")
+@KING.CALL("my_profile")
 async def my_profile(client, callback_query):
     user_id = callback_query.from_user.id
     user = await client.get_users(user_id)
