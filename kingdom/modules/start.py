@@ -36,7 +36,7 @@ async def my_profile(client, callback_query):
     character_profile = await get_character_profile(user_id)
     
     if character_profile:
-        character_name = character_profile['profile_name']
+        character_name = character_profile['profile_name']['name']
         character_stats = await get_character_stats(user_id)
         character_wallet = await get_character_wallet(user_id)
         wallet_text = '\n'.join([f"{stat}: {value}" for stat, value in character_wallet.items()])
