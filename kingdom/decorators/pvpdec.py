@@ -1,6 +1,6 @@
 from kingdom.database import *
 
-async def start_pvp(user_id: int, opponent_id: int, message: Message):
+async def start_pvp(user_id: int, opponent_id: int, message):
     if user_id == opponent_id:
         await message.reply_text("Anda tidak bisa menyerang diri sendiri.")
         return
