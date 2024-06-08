@@ -10,7 +10,7 @@ class FILTERS:
     OWNER = filters.user(ADMINS)
 
 class KING:
-    def CMD(command, filter=FILTERS.ME):
+    def CMD(command, filter=None):
         def wrapper(func):
             @bot.on_message(filters.command(command) & filter)
             async def wrapped_func(client, message):
