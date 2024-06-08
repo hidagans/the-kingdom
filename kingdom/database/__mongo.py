@@ -37,3 +37,5 @@ bodyarmors = db.bodyarmors
 footarmors = db.footsarmors
 invoice = db.invoice
 worldbosstime = db.worldbosstime
+world_boss_rewards = db.world_boss_rewards
+open_world_chess_rewards = db.open_world_chess_rewards

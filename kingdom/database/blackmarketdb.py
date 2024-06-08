@@ -1,6 +1,5 @@
 from .__mongo import *
 import random
-from database import *
 async def get_random_black_market_item():
     try:
         items = await black_market.find().to_list(length=None)
@@ -27,7 +26,7 @@ async def add_item_to_world_boss_rewards():
     item = await get_random_black_market_item()
     if item:
         # Tambahkan item ke pool hadiah world boss
-        await mongodb.world_boss_rewards.insert_one(item)
+        await world_boss_rewards.insert_one(item)
         # Hapus item dari black market
         await black_market.delete_one({"_id": item["_id"]})
         print(f"Item '{item['name']}' telah ditambahkan ke pool hadiah world boss.")
@@ -38,7 +37,7 @@ async def add_item_to_open_world_chess_rewards():
     item = await get_random_black_market_item()
     if item:
         # Tambahkan item ke pool hadiah open world chess
-        await mongodb.open_world_chess_rewards.insert_one(item)
+        await open_world_chess_rewards.insert_one(item)
         # Hapus item dari black market
         await black_market.delete_one({"_id": item["_id"]})
         print(f"Item '{item['name']}' telah ditambahkan ke pool hadiah open world chess.")
