@@ -79,14 +79,9 @@ async def start_command(client, message):
         ]
     ]
 
-    main_button = [
-        [KeyboardButton("MY PROFILE"), KeyboardButton("KONTEN")],
-        [KeyboardButton("BLACK MARKET")]
-
-    ]
     if character_profile:
-        await message.reply("Selamat datang kembali! Ini profil Anda:", reply_markup=ReplyKeyboardMarkup(
-                main_button, resize_keyboard=True
+        await message.reply("Selamat datang kembali! Ini profil Anda:", reply_markup=InlineKeyboardMarkup (
+                buttons
             ))
     else:
         await message.reply("Halo! Anda belum mendaftar. Silakan buat karakter Anda dengan mengirim pesan /daftar.")
