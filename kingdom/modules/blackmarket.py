@@ -4,7 +4,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import random
 
-@KING.CALLBACK("black_market")
+@KING.CALL("black_market")
 async def black_market(client, callback_query):
     user_id = callback_query.from_user.id
     character = await get_character_profile(user_id)
@@ -25,7 +25,7 @@ async def black_market(client, callback_query):
     
     await callback_query.edit_message_text("Black Market", reply_markup=black_market_markup)
 
-@KING.CALLBACK("black_market_menu")
+@KING.CALL("black_market_menu")
 async def black_market_menu(client, callback_query):
     location = -1002074292027
     map_data = await get_maps(location)
@@ -88,7 +88,7 @@ async def sell_item(client, message):
         print(f"Error in sell_item: {e}")
         await message.reply_text("Terjadi kesalahan saat menjual item.")
 
-@KING.CALLBACK("travel_to_nightshade")
+@KING.CALL("travel_to_nightshade")
 async def travel_to_nightshade(client, callback_query):
     user_id = callback_query.from_user.id
     character = await get_character_profile(user_id)
