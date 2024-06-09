@@ -4,7 +4,7 @@ import os
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "7473979921:AAFAVOwhiJLGzrkLrUWuZST1srqMoqyaUV4")
 API_ID = int(os.environ.get("API_ID", "21445722"))
 API_HASH = os.environ.get("API_HASH", "710f18f90849255dd85837d00d5fe85f")
-MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://king:king@cluster0.ii4v0sg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://tititgoreng:Mantulx10@cluster0.5odosuy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 ADMINS = [int(x) for x in os.environ.get("ADMINS", "6696975845 7091183397 1784606556").split()]
 
 # Payment API
