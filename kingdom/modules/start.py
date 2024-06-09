@@ -19,7 +19,7 @@ async def show_stats_command(client, callback_query):
     reply_markup = InlineKeyboardMarkup(buttons)
     
     if character_profile:
-        character_name = character_profile['name']
+        character_name = character_profile['profile_name']['name']
         character_stats = await get_character_stats(user_id)
         stats_text = '\n'.join([f"{stat}: {value}" for stat, value in character_stats.items()])
         reply_text = f"Nama: {character_name}\nStatistik Total:\n{stats_text}"

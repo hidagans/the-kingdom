@@ -100,7 +100,12 @@ async def give_dungeon_rewards(user_id):
     await add_exp(user_id, exp_reward)
     await add_skill_points(user_id, skill_point_reward)
     await save_dungeon_rewards_to_character(user_id, silver_reward, exp_reward, skill_point_reward, random_item)
-    await bot.send_message(user_id, message_text)
+    
+    # Split the message text if it exceeds the limit
+    max_length = 1024
+    for i in range(0, len(message_text), max_length):
+        part = message_text[i:i+max_length]
+        await bot.send_message(user_id, part)
 
 async def damage_log_dungeon(user_id):
     character = await characters.find_one({"user_id": user_id})
