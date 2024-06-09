@@ -12,5 +12,5 @@ XENDIT_API = os.environ.get("XENDIT_API", "xnd_production_YvvvtTET0A7JpHP38jnLgY
 XENDIT_CALLBACK_TOKEN = '6AwHb7Sv0D1q8YbimDKkXsSU3vOPdTVffmuJSXfkUltc0gkF'
 
 # Groups and channels to join
-MUST_JOIN = os.environ.get("MUST_JOIN", "CilikStoree")
+MUST_JOIN = os.environ.get("MUST_JOIN", "thekingdom_official")
 CHANNEL = os.environ.get("CHANNEL_ID", "-1002083228353")
