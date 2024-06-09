@@ -16,7 +16,6 @@ from aiofiles.os import remove as aremove
 from pyrogram import __version__ as pyrover
 from pyrogram import filters
 from pyrogram.errors import FloodWait
-from pytgcalls.__version__ import __version__ as pytgver
 
 from kingdom import bot
 from kingdom.database import *
