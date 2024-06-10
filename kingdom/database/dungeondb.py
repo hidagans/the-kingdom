@@ -261,7 +261,7 @@ async def save_dungeon_rewards_to_character(user_id, silver_reward, exp_reward, 
         exp_new = exp_previous + exp_reward
         skill_point_new = skill_point_previous + skill_point_reward
         character_profile['currency']['Silver'] = silver_new
-        character_profile['stats']['EXP'] = exp_new
+        character_profile['stats']['Exp'] = exp_new
         character_profile['stats']['Skill Points'] = skill_point_new
 
         if item:

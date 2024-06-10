@@ -3,7 +3,7 @@ from config import MONGO_URL
 
 client = pymongo.MongoClient(MONGO_URL)
 database = client["kingdom"]
-collection = database["bodyarmor"]
+collection = database["bodyarmors"]
 
 bodyarmor_data = {
     'Leather Jacket': {

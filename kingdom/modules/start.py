@@ -117,7 +117,8 @@ async def create_character(client, message):
     character_name = ' '.join(message.command[1:])
     
     if not character_profile:
-        character_stats = {'EXP': 0, 'Fight': 0, 'Skill Points': 0, 'max_hp': 1200, 'max_mana': 10}
+        character_stats = {'Exp': 0, 'Skill Points': 0, 'current_hp': 1200, 'max_hp':1200 ,'max_mana': 10,}
+        default_stats = {'characters_hp': 1200,}
         profile = {'user_id': user_id, 'name': character_name}
         await save_character_profile(user_id, profile)
         await save_character_stats(user_id, character_stats)
