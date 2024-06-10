@@ -11,7 +11,7 @@ import pymongo
 async def get_random_monster(tier):
     monsters = {
         3: [
-            {
+            {   "photo": "./kingdom/monster/troll.jpeg",
                 "name": "Troll",
                 "level": 3,
                 "max_hp": 300,
@@ -20,7 +20,7 @@ async def get_random_monster(tier):
                 "reward_exp": 90,
                 "reward_silver": 300
             },
-            {
+            {   "photo": "./kingdom/monster/darkelf.jpeg",
                 "name": "Dark Elf",
                 "level": 3,
                 "max_hp": 250,
@@ -31,7 +31,7 @@ async def get_random_monster(tier):
             }
         ],
         4: [
-            {
+            {   "photo": "./kingdom/monster/ogre.jpeg",
                 "name": "Ogre",
                 "level": 4,
                 "max_hp": 400,
@@ -40,7 +40,7 @@ async def get_random_monster(tier):
                 "reward_exp": 130,
                 "reward_silver": 500
             },
-            {
+            {   "photo": "./kingdom/monster/necromancer.jpeg",
                 "name": "Necromancer",
                 "level": 4,
                 "max_hp": 350,
@@ -51,7 +51,7 @@ async def get_random_monster(tier):
             }
         ],
         5: [
-            {
+            {   "photo": "./kingdom/monster/dragonling.jpeg",   
                 "name": "Dragonling",
                 "level": 5,
                 "max_hp": 500,
@@ -60,7 +60,7 @@ async def get_random_monster(tier):
                 "reward_exp": 180,
                 "reward_silver": 700
             },
-            {
+            {   "photo": "./kingdom/monster/vampirlord.jpeg",
                 "name": "Vampire Lord",
                 "level": 5,
                 "max_hp": 450,
@@ -71,7 +71,7 @@ async def get_random_monster(tier):
             }
         ],
         6: [
-            {
+            {   "photo": "./kingdom/monster/demon.jpeg",
                 "name": "Demon",
                 "level": 6,
                 "max_hp": 600,
@@ -80,7 +80,7 @@ async def get_random_monster(tier):
                 "reward_exp": 230,
                 "reward_silver": 900
             },
-            {
+            {   "photo": "./kingdom/monster/ancientlich.jpeg",
                 "name": "Ancient Lich",
                 "level": 6,
                 "max_hp": 550,
@@ -91,7 +91,7 @@ async def get_random_monster(tier):
             }
         ],
         7: [
-            {
+            {   "photo": "./kingdom/monster/fireelemental.jpeg",
                 "name": "Fire Elemental",
                 "level": 7,
                 "max_hp": 700,
@@ -100,7 +100,7 @@ async def get_random_monster(tier):
                 "reward_exp": 300,
                 "reward_silver": 1200
             },
-            {
+            {   "photo": "./kingdom/monster/icegolem.jpeg",
                 "name": "Ice Golem",
                 "level": 7,
                 "max_hp": 650,
@@ -111,7 +111,7 @@ async def get_random_monster(tier):
             }
         ],
         8: [
-            {
+            {   "photo": "./kingdom/monster/ancientdragon.jpeg",
                 "name": "Ancient Dragon",
                 "level": 8,
                 "max_hp": 800,
@@ -120,7 +120,7 @@ async def get_random_monster(tier):
                 "reward_exp": 400,
                 "reward_silver": 1500
             },
-            {
+            {   "photo": "./kingdom/monster/necromancer.jpeg",
                 "name": "Titan",
                 "level": 8,
                 "max_hp": 750,
@@ -132,6 +132,8 @@ async def get_random_monster(tier):
         ]
     }
     return random.choice(monsters[tier])
+
+
 async def get_random_item(collection_name):
     collection = getattr(db, collection_name)
     random_item = await collection.aggregate([{ "$sample": { "size": 1 } }]).to_list(1)
@@ -211,7 +213,7 @@ async def complete_dungeon(user_id):
 async def give_dungeon_rewards(user_id):
     item_collections = ["bodyarmors", "headarmors", "footarmors", "weapons"]
     random_collection = random.choice(item_collections)
-    random_item = await get_random_item(random_collection)
+    random_item = await get_random_item("bodyarmors")
     silver_reward = 3000
     exp_reward = 100
     skill_point_reward = 0.25
@@ -305,10 +307,12 @@ async def calculate_damage(attacker, defender):
     damage = max(0, attacker["damage"] - defender["defense"])
     return damage
 
+
 async def handle_combat(player_stats, monster):
     user_id = player_stats['user_id']
     combat_result, combat_log = await combat(user_id, monster)
     return combat_result, combat_log
+
 
 async def combat(user_id, monster):
     character = await get_character_profile(user_id)
@@ -357,35 +361,16 @@ async def combat(user_id, monster):
 
     return combat_result, battle_log
 
-async def handle_dungeon(client, callback_query, tier, completion_time_minutes=5):
+
+
+@KING.CALL("attack")
+async def attack(client, callback_query):
+    data = callback_query.data.split()
     user_id = callback_query.from_user.id
-    in_dungeon = await is_in_dungeon(user_id)
-    buttons = [
-        [
-            InlineKeyboardButton("AMBIL", callback_data=f"cb_collect_t{tier}"),
-            InlineKeyboardButton("BACK", callback_data="dungeon_konten"),
-        ]
-    ]
-    
-    reply_markup = InlineKeyboardMarkup(buttons)
-    if in_dungeon:
-        await callback_query.edit_message_text("Anda masih dalam dungeon. Silakan tunggu sampai selesai sebelum memulai yang lain.", reply_markup=reply_markup)
-        return
-
-    dungeon_completed = await has_completed_dungeon(user_id)
-    if dungeon_completed:
-        await callback_query.edit_message_text("Anda sudah menyelesaikan dungeon sebelumnya. Silakan ambil item sebelum Anda dapat memulai lagi.", reply_markup=reply_markup)
-        return
-
-    current_time = datetime.now()
-    completion_time = current_time + timedelta(minutes=completion_time_minutes)
-
-    await save_dungeon_data(user_id, completion_time)
-
-    reply_text = f"Dungeon Tier {tier} dimulai! Estimasi waktu selesai: {completion_time.strftime('%H:%M')} WIB"
-    await callback_query.edit_message_text(reply_text, reply_markup=reply_markup)
-
-    await asyncio.sleep(completion_time_minutes * 60)  # Menunggu waktu penyelesaian dungeon
+    await callback_query.edit_message_text("Bertarung")
+    await client.send_message(user_id, "⚔️")
+    tier = int(data[2])
+    await asyncio.sleep(int(data[1]) * 60)  # Menunggu waktu penyelesaian dungeon
 
     player_stats = await characters.find_one({"user_id": user_id})
     monster = await get_random_monster(tier)
@@ -401,8 +386,42 @@ async def handle_dungeon(client, callback_query, tier, completion_time_minutes=5
     max_length = 1024
     for i in range(0, len(reply_text), max_length):
         part = reply_text[i:i+max_length]
-        await client.send_message(callback_query.message.chat.id, part)
+        await client.send_message(user_id, part)
 
+
+
+async def handle_dungeon(client, callback_query, tier, completion_time_minutes=1):
+    await callback_query.message.delete()
+    user_id = callback_query.from_user.id
+    in_dungeon = await is_in_dungeon(user_id)
+    buttons = [
+        [
+            InlineKeyboardButton("Attack", callback_data=f"attack {completion_time_minutes} {tier}"),
+            InlineKeyboardButton("Kabur", callback_data="cancel_dungeon"),
+        ]
+    ]
+    buttons_cancel= [
+        [
+            InlineKeyboardButton("Batal", callback_data="cancel_dungeon"),
+        ]
+    ]    
+    ya = await bot.send_photo(user_id, photo="./kingdom/monster/dungeon.jpeg", caption="Dungeon akan segera dimulai.", reply_markup=InlineKeyboardMarkup(buttons_cancel))
+    await asyncio.sleep(5)
+    await ya.delete()
+
+
+    current_time = datetime.now()
+    completion_time = current_time + timedelta(minutes=completion_time_minutes)
+
+    await save_dungeon_data(user_id, completion_time)
+   
+    player_stats = await characters.find_one({"user_id": user_id})
+    monster = await get_random_monster(tier)
+    
+    reply_text = f"Dungeon Tier {tier} dimulai! melawan Monster **{monster['name']}**, Estimasi waktu selesai: {completion_time.strftime('%H:%M')} WIB"
+    await client.send_photo(user_id, photo=monster['photo'], caption=reply_text, reply_markup=InlineKeyboardMarkup(buttons))
+
+    
 
 async def handle_collect_rewards(client, callback_query, tier):
     user_id = callback_query.from_user.id

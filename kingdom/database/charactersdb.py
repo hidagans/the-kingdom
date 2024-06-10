@@ -545,28 +545,35 @@ async def calculate_total_stats(user_id):
     try:
         character = await characters.find_one({"user_id": user_id})  # Menunggu hasil dari coroutine find_one
         if character:
-            equipment = character.get("equipment", {
+            equip = character.get("equipment", {
                 "headarmor": None,
                 "bodyarmor": None,
                 "footarmor": None,
                 "weapons": None
             })
 
+            max_hp_values = []
+
+            for key, equipment in character['equipment'].items():
+                if equipment and 'max_hp' in equipment:
+                    max_hp_values.append(equipment['max_hp'])
+                    
+
             total_stats = {
                 'current_hp': character.get('stats', {}).get('current_hp', {}),
-                'max_hp': character.get('stats', {}).get('characters_hp', 0) + character.get('stats', {}).get('characters_hp', 0),
+                'max_hp': character['stats']['characters_hp'] + sum(max_hp_values),
                 'Exp': character.get('stats', {}).get('Exp', 0),
                 'Skill Points': character.get('stats', {}).get('Skill Points', 0),
                 'characters_hp': character.get('stats', {}).get('characters_hp', 0)
             }
-
+           
             # Jumlahkan statistik dari setiap item
-            for item in equipment.values():
+            for item in equip.values():
                 if item:
                     for stat, value in item.items():
                         if stat not in ["_id", "type", "name", "Level", "armor_type"]:
-                            if stat in total_stats:
-                                total_stats[stat] += value
+                            if stat == 'max_hp':  # Tambahkan max_hp_values ke max_hp
+                                total_stats[stat] = character['stats']['characters_hp'] + sum(max_hp_values)
                             else:
                                 total_stats[stat] = value
 

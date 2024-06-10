@@ -1,3 +1,4 @@
+import asyncio
 from pyrogram import filters
 from pyrogram.types import *
 from kingdom.database import *
@@ -50,3 +51,30 @@ async def collect_dungeon_t7_rewards(client, callback_query):
 @KING.CALL("cb_collect_t8")
 async def collect_dungeon_t8_rewards(client, callback_query):
     await handle_collect_rewards(client, callback_query, tier=8)
+
+@KING.CALL("cancel_dungeon")
+async def cancel_dungeon(client, callback_query):
+    await callback_query.message.delete()
+    await client.send_message(callback_query.from_user.id, "Dungeon dibatalkan")
+    await asyncio.sleep(2)
+    buttons = [
+        [
+            InlineKeyboardButton("DUNGEON", callback_data="dungeon_konten"),
+            InlineKeyboardButton("WORLD BOSS", callback_data="world_boss"),
+        ],
+        [
+            InlineKeyboardButton("FACTION", callback_data="faction_konten"),
+            InlineKeyboardButton("PVP", callback_data="pvp_konten"),
+        ],
+        [
+            InlineKeyboardButton("GVG", callback_data="gvg_konten"),
+            InlineKeyboardButton("GATHERING", callback_data="cb_gathering_konten"),
+        ],
+        [
+            InlineKeyboardButton("MAPS", callback_data="^maps"),
+            InlineKeyboardButton("BACK", callback_data="start")
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(buttons)
+    await client.send_message(callback_query.from_user.id, "Pilih menu konten:", reply_markup=reply_markup)
+    pass
