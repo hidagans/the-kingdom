@@ -5,7 +5,12 @@ import string
 async def get_character_profile(user_id):
     try:
         character_data = await characters.find_one({"user_id": user_id})
-        return character_data
+        if character_data:
+            # Inisialisasi nilai default jika currency tidak ada
+            if 'currency' not in character_data:
+                character_data['currency'] = {'Silver': 0, 'Gold': 0}
+            return character_data
+        return None
     except Exception as e:
         print(f"Error in get_character_profile function: {e}")
         return None
@@ -56,8 +61,8 @@ async def update_item_power(user_id, item_type, new_item_power):
     character = await characters.find_one({"user_id": user_id})
     
     if character:
-        if item_type in character.get('items', {}):
-            character['items'][item_type]['item_power'] = new_item_power
+        if item_type in character.get('equipment', {}):
+            character['equipment'][item_type]['item_power'] = new_item_power
             await characters.replace_one({"user_id": user_id}, character)
             return True
         else:
@@ -102,14 +107,14 @@ async def get_total_silver():
     total_silver = 0
     all_characters = await characters.find().to_list(length=None)
     for character in all_characters:
-        total_silver += character['stats'].get('Silver', 0)
+        total_silver += character['currency'].get('Silver', 0)
     return total_silver
 
 async def get_total_gold():
     total_gold = 0
     all_characters = await characters.find().to_list(length=None)
     for character in all_characters:
-        total_gold += character['stats'].get('Gold', 0)
+        total_gold += character['currency'].get('Gold', 0)
     return total_gold
 
 async def delete_character_profile(user_id):
@@ -139,33 +144,32 @@ async def add_silver(user_id, amount):
     try:
         character_profile = await get_character_profile(user_id)
         if character_profile:
-            silver_previous = character_profile.get('stats', {}).get('Silver', 0)
-            silver_new = silver_previous + amount
-            character_profile['stats']['Silver'] = silver_new
+            silver_previous = character_profile.get('currency', {}).get('Silver', 0)
+            silver_new = (silver_previous if silver_previous is not None else 0) + amount
+            character_profile['currency']['Silver'] = silver_new
             await save_character_profile(user_id, character_profile)
-            
             return True, silver_new
         else:
             return False, None
     except Exception as e:
-        print(f"Error in silver_gold function: {e}")
+        print(f"Error in add_silver function: {e}")
         return False, None
 
 async def add_gold(user_id, amount):
     try:
         character_profile = await get_character_profile(user_id)
         if character_profile:
-            gold_previous = character_profile.get('stats', {}).get('Gold', 0)
-            gold_new = gold_previous + amount
-            character_profile['stats']['Gold'] = gold_new
+            gold_previous = character_profile.get('currency', {}).get('Gold', 0)
+            gold_new = (gold_previous if gold_previous is not None else 0) + amount
+            character_profile['currency']['Gold'] = gold_new
             await save_character_profile(user_id, character_profile)
-            
             return True, gold_new
         else:
             return False, None
     except Exception as e:
         print(f"Error in add_gold function: {e}")
         return False, None
+
 
 async def add_exp(user_id, amount):
     try:
@@ -200,7 +204,7 @@ async def add_skill_points(user_id, amount):
     except Exception as e:
         print(f"Error in add_skill_points function: {e}")
         return False, None
-    
+
 async def create_token(user_id):
     character_profile = await get_character_profile(user_id)
     token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))

@@ -3,7 +3,8 @@ from kingdom.decorators import *
 import datetime
 
 async def get_users_in_world_boss():
-    return await worldbosstime.find().to_list(length=None)
+    users = await characters.find({"world_boss": {"$ne": None}})
+    return users
 
 # Fungsi untuk menyimpan data world boss ke dalam database
 async def save_world_boss_data(user_id, completion_time):
