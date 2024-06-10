@@ -209,7 +209,7 @@ async def complete_dungeon(user_id):
     await delete_dungeon_data(user_id)
 
 async def give_dungeon_rewards(user_id):
-    item_collections = ["bodyarmor", "headarmor", "footarmor", "weapons"]
+    item_collections = ["bodyarmors", "headarmors", "footarmors", "weapons"]
     random_collection = random.choice(item_collections)
     random_item = await get_random_item(random_collection)
     silver_reward = 3000

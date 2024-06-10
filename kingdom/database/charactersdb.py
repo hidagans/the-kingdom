@@ -554,7 +554,7 @@ async def calculate_total_stats(user_id):
 
             total_stats = {
                 'current_hp': character.get('stats', {}).get('current_hp', {}),
-                'max_hp': character.get('stats', {}).get('max_hp', 0) + character.get('stats', {}).get('characters_hp', 0),
+                'max_hp': character.get('stats', {}).get('characters_hp', 0) + character.get('stats', {}).get('characters_hp', 0),
                 'Exp': character.get('stats', {}).get('Exp', 0),
                 'Skill Points': character.get('stats', {}).get('Skill Points', 0),
                 'characters_hp': character.get('stats', {}).get('characters_hp', 0)
