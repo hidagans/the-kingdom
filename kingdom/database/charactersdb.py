@@ -146,7 +146,7 @@ async def add_silver(user_id, amount_silver):
             character_profile['currency']['Silver'] = silver_new
             await characters.update_one(
               {"user_id": user_id},
-              {"$set": {"currency.Silver":  silver_new}
+              {"$set": {"currency.Silver":  silver_new}}
               )
               return True, silver_new
         else:
