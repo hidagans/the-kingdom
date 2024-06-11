@@ -144,8 +144,11 @@ async def add_silver(user_id, amount_silver):
             silver_previous = character_profile.get('currency', {}).get('Silver', 0)
             silver_new = (silver_previous if silver_previous is not None else 0) + amount_silver
             character_profile['currency']['Silver'] = silver_new
-            await save_character_profile(user_id, character_profile)
-            return True, silver_new
+            await characters.update_one(
+              {"user_id": user_id},
+              {"$set": {"currency.Silver":  silver_new}
+              )
+              return True, silver_new
         else:
             return False, None
     except Exception as e:
