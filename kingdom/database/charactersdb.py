@@ -148,7 +148,6 @@ async def add_silver(user_id, amount_silver):
               {"user_id": user_id},
               {"$set": {"currency.Silver":  silver_new}}
               )
-              return True
         else:
             return False, None
     except Exception as e:
