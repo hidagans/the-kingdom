@@ -65,7 +65,7 @@ async def my_profile(client, callback_query):
 
 
 # Command to handle /start
-@KING.CMD("start")
+@bot.on_message(filters.command("start"))
 async def start_command(client, message):
     user_id = message.from_user.id
     await add_served_user(user_id)
