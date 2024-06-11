@@ -161,8 +161,10 @@ async def add_gold(user_id, amount):
             gold_previous = character_profile.get('currency', {}).get('Gold', 0)
             gold_new = (gold_previous if gold_previous is not None else 0) + amount
             character_profile['currency']['Gold'] = gold_new
-            await save_character_profile(user_id, character_profile)
-            return True, gold_new
+            await characters.update_one(
+              {"user_id": user_id},
+              {"$set": {"currency.Gold":  gold_new}}
+              )
         else:
             return False, None
     except Exception as e:
