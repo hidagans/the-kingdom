@@ -4,6 +4,7 @@ import string
 from pyromod import listen
 import logging
 from pyrogram.types import *
+from config import XP_PER_LEVEL, XP_INCREMENT
 
 async def get_character_profile(user_id):
     try:
@@ -136,12 +137,12 @@ async def add_item_power_to_profile(user_id, total_power):
         await characters.replace_one({"user_id": user_id}, character_profile)
 
 
-async def add_silver(user_id, amount):
+async def add_silver(user_id, amount_silver):
     try:
         character_profile = await get_character_profile(user_id)
         if character_profile:
             silver_previous = character_profile.get('currency', {}).get('Silver', 0)
-            silver_new = (silver_previous if silver_previous is not None else 0) + amount
+            silver_new = (silver_previous if silver_previous is not None else 0) + amount_silver
             character_profile['currency']['Silver'] = silver_new
             await save_character_profile(user_id, character_profile)
             return True, silver_new
@@ -167,29 +168,46 @@ async def add_gold(user_id, amount):
         return False, None
 
 
-async def add_exp(user_id, amount):
+async def add_exp(user_id, amount_exp):
     try:
         character_profile = await get_character_profile(user_id)
         if character_profile:
-            exp_previous = character_profile.get('stats', {}).get('Exp', 0)
-            exp_new = exp_previous + amount
-            character_profile['stats']['Exp'] = exp_new
-            await save_character_profile(user_id, character_profile)
-            
-            return True, exp_new
-        else:
-            return False, None
-    except Exception as e:
-        print(f"Error in add_exp function: {e}")
-        return False, None
+            # Mengambil nilai EXP dan level saat ini dengan nilai default jika tidak ada
+            new_xp = character_profile.get("stats", {}).get("Exp", 0) + amount_exp
+            level = character_profile.get("stats", {}).get("level", 1)
+            level_up = False
+            xp_for_next_level = XP_PER_LEVEL * level
 
-async def add_skill_points(user_id, amount):
+            # Loop untuk menangani level up
+            while new_xp >= xp_for_next_level:
+                new_xp -= xp_for_next_level
+                level += 1
+                level_up = True
+                xp_for_next_level = XP_PER_LEVEL + (XP_INCREMENT * level)
+
+            # Pembaruan data di database
+            await characters.update_one(
+                {"user_id": user_id},
+                {"$set": {"stats.Exp": new_xp, "stats.level": level}}
+            )
+
+            # Mengembalikan pesan berdasarkan apakah level up terjadi atau tidak
+            if level_up:
+                return f"Level up! Kamu sekarang level {level}."
+            return f"EXP bertambah! Kamu sekarang memiliki {new_xp} EXP."
+        else:
+            return "Karakter tidak ditemukan."
+    except Exception as e:
+        logging.error(f"Error in add_exp: {e}")
+        return "Terjadi kesalahan saat menambahkan EXP."
+
+async def add_skill_points(user_id, amount_skill):
     try:
         character_profile = await get_character_profile(user_id)
         
         if character_profile:
             skill_points_previous = character_profile.get('stats', {}).get('Skill Points', 0)
-            skill_points_new = skill_points_previous + amount
+            skill_points_new = skill_points_previous + amount_skill
             
             character_profile['stats']['Skill Points'] = skill_points_new
             await save_character_profile(user_id, character_profile)

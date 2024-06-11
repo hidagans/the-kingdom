@@ -14,3 +14,7 @@ XENDIT_CALLBACK_TOKEN = '6AwHb7Sv0D1q8YbimDKkXsSU3vOPdTVffmuJSXfkUltc0gkF'
 # Groups and channels to join
 MUST_JOIN = os.environ.get("MUST_JOIN", "thekingdom_official")
 CHANNEL = os.environ.get("CHANNEL_ID", "-1002083228353")
+
+# GAME CONFIGURATION
+XP_PER_LEVEL = 800
+XP_INCREMENT = 200

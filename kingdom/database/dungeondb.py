@@ -18,7 +18,7 @@ async def get_random_monster(tier):
                 "damage": 35,
                 "defense": 20,
                 "reward_exp": 90,
-                "reward_silver": 300
+                "amount_silver": 300
             },
             {   "photo": "./kingdom/monster/darkelf.jpeg",
                 "name": "Dark Elf",
@@ -27,7 +27,7 @@ async def get_random_monster(tier):
                 "damage": 40,
                 "defense": 25,
                 "reward_exp": 100,
-                "reward_silver": 350
+                "amount_silver": 350
             }
         ],
         4: [
@@ -38,7 +38,7 @@ async def get_random_monster(tier):
                 "damage": 50,
                 "defense": 30,
                 "reward_exp": 130,
-                "reward_silver": 500
+                "amount_silver": 500
             },
             {   "photo": "./kingdom/monster/necromancer.jpeg",
                 "name": "Necromancer",
@@ -47,7 +47,7 @@ async def get_random_monster(tier):
                 "damage": 55,
                 "defense": 35,
                 "reward_exp": 150,
-                "reward_silver": 550
+                "amount_silver": 550
             }
         ],
         5: [
@@ -58,7 +58,7 @@ async def get_random_monster(tier):
                 "damage": 60,
                 "defense": 40,
                 "reward_exp": 180,
-                "reward_silver": 700
+                "amount_silver": 700
             },
             {   "photo": "./kingdom/monster/vampirlord.jpeg",
                 "name": "Vampire Lord",
@@ -67,7 +67,7 @@ async def get_random_monster(tier):
                 "damage": 70,
                 "defense": 45,
                 "reward_exp": 200,
-                "reward_silver": 750
+                "amount_silver": 750
             }
         ],
         6: [
@@ -78,7 +78,7 @@ async def get_random_monster(tier):
                 "damage": 80,
                 "defense": 50,
                 "reward_exp": 230,
-                "reward_silver": 900
+                "amount_silver": 900
             },
             {   "photo": "./kingdom/monster/ancientlich.jpeg",
                 "name": "Ancient Lich",
@@ -87,7 +87,7 @@ async def get_random_monster(tier):
                 "damage": 85,
                 "defense": 55,
                 "reward_exp": 250,
-                "reward_silver": 950
+                "amount_silver": 950
             }
         ],
         7: [
@@ -98,7 +98,7 @@ async def get_random_monster(tier):
                 "damage": 100,
                 "defense": 60,
                 "reward_exp": 300,
-                "reward_silver": 1200
+                "amount_silver": 1200
             },
             {   "photo": "./kingdom/monster/icegolem.jpeg",
                 "name": "Ice Golem",
@@ -107,7 +107,7 @@ async def get_random_monster(tier):
                 "damage": 110,
                 "defense": 65,
                 "reward_exp": 320,
-                "reward_silver": 1250
+                "amount_silver": 1250
             }
         ],
         8: [
@@ -118,7 +118,7 @@ async def get_random_monster(tier):
                 "damage": 130,
                 "defense": 70,
                 "reward_exp": 400,
-                "reward_silver": 1500
+                "amount_silver": 1500
             },
             {   "photo": "./kingdom/monster/necromancer.jpeg",
                 "name": "Titan",
@@ -127,7 +127,7 @@ async def get_random_monster(tier):
                 "damage": 140,
                 "defense": 75,
                 "reward_exp": 450,
-                "reward_silver": 1600
+                "amount_silver": 1600
             }
         ]
     }
@@ -283,29 +283,6 @@ async def set_complete_dungeon(user_id):
         {"$set": {"status": "completed"}},
         upsert=True
     )
-async def add_xp(user_id, xp):
-    character = await characters.find_one({"user_id": user_id})
-    if not character:
-        return "Karakter tidak ditemukan."
-    new_xp = character.get("xp", 0) + xp
-    level = character.get("level", 1)
-    level_up = False
-    xp_for_next_level = 100 * level
-
-    while new_xp >= xp_for_next_level:
-        new_xp -= xp_for_next_level
-        level += 1
-        level_up = True
-        xp_for_next_level = 100 * level
-
-    await characters.update_one(
-        {"user_id": user_id},
-        {"$set": {"xp": new_xp, "level": level}}
-    )
-
-    if level_up:
-        return f"Level up! Kamu sekarang level {level}."
-    return f"XP bertambah! Kamu sekarang memiliki {new_xp} XP."
 
 async def calculate_damage(attacker, defender):
     damage = max(0, attacker["damage"] - defender["defense"])
@@ -352,11 +329,11 @@ async def combat(user_id, monster):
     # Determine the outcome
     combat_result = ""
     if current_hp > 0:
-        reward_exp = monster["reward_exp"]
-        reward_silver = monster["reward_silver"]
-        await add_exp(user_id, reward_exp)
-        await add_silver(user_id, reward_silver)
-        combat_result = f"Kamu mengalahkan {monster['name']}! Mendapatkan {reward_exp} EXP dan {reward_silver} Silver."
+        amount_exp = monster["reward_exp"]
+        amount_silver = monster["amount_silver"]
+        await add_exp(user_id, amount_exp)
+        await add_silver(user_id, amount_silver)
+        combat_result = f"Kamu mengalahkan {monster['name']}! Mendapatkan {amount_exp} EXP dan {amount_silver} Silver."
     else:
         combat_result = f"Kamu dikalahkan oleh {monster['name']}."
 
