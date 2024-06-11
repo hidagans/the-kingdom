@@ -72,27 +72,6 @@ async def konten_menu(client, callback_query):
     reply_markup = InlineKeyboardMarkup(buttons)
     await callback_query.edit_message_text("Pilih menu konten:", reply_markup=reply_markup)
 
-@KING.CALL("dungeon_konten")
-async def dungeon_konten(client, callback_query):
-    buttons = [
-        [
-            InlineKeyboardButton("DUNGEON T3", callback_data="dungeon_t3"),
-            InlineKeyboardButton("DUNGEON T4", callback_data="dungeon_t4"),
-        ],
-        [
-            InlineKeyboardButton("DUNGEON T5", callback_data="dungeon_t5"),
-            InlineKeyboardButton("DUNGEON T6", callback_data="dungeon_t6"),
-        ],
-        [
-            InlineKeyboardButton("DUNGEON T7", callback_data="dungeon_t7"),
-            InlineKeyboardButton("DUNGEON T8", callback_data="dungeon_t8"),
-        ],
-        [
-            InlineKeyboardButton("BACK", callback_data="cb_konten"),
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(buttons)
-    await callback_query.edit_message_text("Pilih dungeon:", reply_markup=reply_markup)
 
 @KING.CALL("cb_equipment")
 async def equipment_command(client, callback_query):

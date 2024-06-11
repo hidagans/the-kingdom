@@ -170,34 +170,33 @@ async def check_dungeon_completion():
         users_in_dungeon = await get_users_in_dungeon()
         for document in users_in_dungeon:
             user_id = document["user_id"]
-            completion_time = document["completion_time"]
-            current_time = datetime.now().astimezone()
-            completion_time_aware = completion_time.astimezone() if completion_time else None
-            if completion_time_aware and completion_time_aware < current_time:
+            completion_status = document["status"]
+            if completion_status == "completed":
+                await dungeontime.delete_one({"user_id": user_id})
                 await complete_dungeon(user_id)
         await asyncio.sleep(60)
 
-async def save_dungeon_data(user_id, completion_time):
+async def save_dungeon_data(user_id, status):
     await dungeontime.update_one(
         {"user_id": user_id},
-        {"$set": {"completion_time": completion_time}},
+        {"$set": {"status": status}},
         upsert=True
     )
 
 async def is_in_dungeon(user_id):
-    completion_time = await get_dungeon_completion_time(user_id)
-    current_time = datetime.now()
-    completion_time_aware = completion_time.astimezone() if completion_time else None
-    current_time_aware = current_time.astimezone()
-    if completion_time_aware:
-        return completion_time_aware > current_time_aware
+    completion_status = await get_dungeon_completion_time(user_id)
+    current_status = "process"
+    completion_status_aware = "completed" if completion_status else None
+    current_status_aware = current_status
+    if completion_status_aware:
+        return completion_status_aware > current_status_aware
     return False
 
 async def get_dungeon_completion_time(user_id):
     try:
         document = await dungeontime.find_one({"user_id": user_id})
         if document:
-            return document["completion_time"]
+            return document["status"]
         return None
     except Exception as e:
         print(f"Error while fetching dungeon completion time: {e}")
@@ -271,14 +270,19 @@ async def save_dungeon_rewards_to_character(user_id, silver_reward, exp_reward, 
 
         await save_character_profile(user_id, character_profile)
 
-async def has_completed_dungeon(user_id: int) -> bool:
-    completion_time = await get_dungeon_completion_time(user_id)
-    if completion_time:
-        current_time = datetime.now(completion_time.tzinfo)
-        if current_time > completion_time:
-            return True
+async def has_completed_dungeon(user_id):
+    dungeon = await dungeontime.find_one({"user_id": user_id})
+    if dungeon and dungeon.get("status") == "completed":
+        return True
     return False
 
+    
+async def set_complete_dungeon(user_id):
+    await dungeontime.update_one(
+        {"user_id": user_id},
+        {"$set": {"status": "completed"}},
+        upsert=True
+    )
 async def add_xp(user_id, xp):
     character = await characters.find_one({"user_id": user_id})
     if not character:
@@ -363,62 +367,32 @@ async def combat(user_id, monster):
 
 
 
-@KING.CALL("attack")
-async def attack(client, callback_query):
-    data = callback_query.data.split()
-    user_id = callback_query.from_user.id
-    await callback_query.edit_message_text("Bertarung")
-    await client.send_message(user_id, "⚔️")
-    tier = int(data[2])
-    await asyncio.sleep(int(data[1]) * 60)  # Menunggu waktu penyelesaian dungeon
-
-    player_stats = await characters.find_one({"user_id": user_id})
-    monster = await get_random_monster(tier)
-    combat_result, combat_log = await handle_combat(player_stats, monster)
-
-    combat_log_text = "\n".join(combat_log)
-    if combat_result:
-        reply_text = f"Anda telah menyelesaikan Dungeon Tier {tier}\n\n{combat_log_text}"
-    else:
-        reply_text = f"Anda kalah dalam Dungeon Tier {tier}\n\n{combat_log_text}"
-
-    # Split the reply_text into multiple messages if it exceeds the limit
-    max_length = 1024
-    for i in range(0, len(reply_text), max_length):
-        part = reply_text[i:i+max_length]
-        await client.send_message(user_id, part)
-
-
-
-async def handle_dungeon(client, callback_query, tier, completion_time_minutes=1):
+async def handle_dungeon(client, callback_query, tier):
     await callback_query.message.delete()
     user_id = callback_query.from_user.id
     in_dungeon = await is_in_dungeon(user_id)
     buttons = [
         [
-            InlineKeyboardButton("Attack", callback_data=f"attack {completion_time_minutes} {tier}"),
+            InlineKeyboardButton("Attack", callback_data=f"attack {tier}"),
             InlineKeyboardButton("Kabur", callback_data="cancel_dungeon"),
         ]
     ]
-    buttons_cancel= [
+    buttons_cancel = [
         [
             InlineKeyboardButton("Batal", callback_data="cancel_dungeon"),
         ]
-    ]    
+    ]
     ya = await bot.send_photo(user_id, photo="./kingdom/monster/dungeon.jpeg", caption="Dungeon akan segera dimulai.", reply_markup=InlineKeyboardMarkup(buttons_cancel))
     await asyncio.sleep(5)
     await ya.delete()
 
+    status = "process"
+    await save_dungeon_data(user_id, status)
 
-    current_time = datetime.now()
-    completion_time = current_time + timedelta(minutes=completion_time_minutes)
-
-    await save_dungeon_data(user_id, completion_time)
-   
     player_stats = await characters.find_one({"user_id": user_id})
     monster = await get_random_monster(tier)
-    
-    reply_text = f"Dungeon Tier {tier} dimulai! melawan Monster **{monster['name']}**, Estimasi waktu selesai: {completion_time.strftime('%H:%M')} WIB"
+
+    reply_text = f"Dungeon Tier {tier} dimulai! melawan Monster **{monster['name']}**."
     await client.send_photo(user_id, photo=monster['photo'], caption=reply_text, reply_markup=InlineKeyboardMarkup(buttons))
 
     
@@ -439,6 +413,31 @@ async def handle_collect_rewards(client, callback_query, tier):
         await callback_query.edit_message_text(f"Hadiah dungeon Tier {tier} telah dikumpulkan!", reply_markup=reply_markup)
     else:
         await callback_query.edit_message_text("Anda belum menyelesaikan dungeon ini.", reply_markup=reply_markup)
+
+@KING.CALL("attack")
+async def attack(client, callback_query):
+    data = callback_query.data.split()
+    user_id = callback_query.from_user.id
+    await callback_query.edit_message_text("Bertarung")
+    await client.send_message(user_id, "⚔️")
+    tier = int(data[1])
+
+    player_stats = await characters.find_one({"user_id": user_id})
+    monster = await get_random_monster(tier)
+    combat_result, combat_log = await handle_combat(player_stats, monster)
+
+    combat_log_text = "\n".join(combat_log)
+    if combat_result:
+        await set_complete_dungeon(user_id)
+        reply_text = f"Anda telah menyelesaikan Dungeon Tier {tier}\n\n{combat_log_text}"
+    else:
+        reply_text = f"Anda kalah dalam Dungeon Tier {tier}\n\n{combat_log_text}"
+
+    # Split the reply_text into multiple messages if it exceeds the limit
+    max_length = 1024
+    for i in range(0, len(reply_text), max_length):
+        part = reply_text[i:i+max_length]
+        await client.send_message(user_id, part)
 
 loop = asyncio.get_event_loop()
 loop.create_task(check_dungeon_completion())

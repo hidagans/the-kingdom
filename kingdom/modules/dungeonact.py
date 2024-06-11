@@ -4,29 +4,51 @@ from pyrogram.types import *
 from kingdom.database import *
 from kingdom.core import *
 
+@KING.CALL("dungeon_konten")
+async def dungeon_konten(client, callback_query):
+    buttons = [
+        [
+            InlineKeyboardButton("DUNGEON T3", callback_data="dungeon_t3"),
+            InlineKeyboardButton("DUNGEON T4", callback_data="dungeon_t4"),
+        ],
+        [
+            InlineKeyboardButton("DUNGEON T5", callback_data="dungeon_t5"),
+            InlineKeyboardButton("DUNGEON T6", callback_data="dungeon_t6"),
+        ],
+        [
+            InlineKeyboardButton("DUNGEON T7", callback_data="dungeon_t7"),
+            InlineKeyboardButton("DUNGEON T8", callback_data="dungeon_t8"),
+        ],
+        [
+            InlineKeyboardButton("BACK", callback_data="cb_konten"),
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(buttons)
+    await callback_query.edit_message_text("Pilih dungeon:", reply_markup=reply_markup)
+
 @KING.CALL("dungeon_t3")
 async def start_dungeon_t3(client, callback_query):
-    await handle_dungeon(client, callback_query, tier=3, completion_time_minutes=3)
+    await handle_dungeon(client, callback_query, tier=3)
 
 @KING.CALL("dungeon_t4")
 async def start_dungeon_t4(client, callback_query):
-    await handle_dungeon(client, callback_query, tier=4, completion_time_minutes=4)
+    await handle_dungeon(client, callback_query, tier=4)
 
 @KING.CALL("dungeon_t5")
 async def start_dungeon_t5(client, callback_query):
-    await handle_dungeon(client, callback_query, tier=5, completion_time_minutes=5)
+    await handle_dungeon(client, callback_query, tier=5)
 
 @KING.CALL("dungeon_t6")
 async def start_dungeon_t6(client, callback_query):
-    await handle_dungeon(client, callback_query, tier=6, completion_time_minutes=6)
+    await handle_dungeon(client, callback_query, tier=6)
 
 @KING.CALL("dungeon_t7")
 async def start_dungeon_t7(client, callback_query):
-    await handle_dungeon(client, callback_query, tier=7, completion_time_minutes=7)
+    await handle_dungeon(client, callback_query, tier=7)
 
 @KING.CALL("dungeon_t8")
 async def start_dungeon_t8(client, callback_query):
-    await handle_dungeon(client, callback_query, tier=8, completion_time_minutes=8)
+    await handle_dungeon(client, callback_query, tier=8)
 
 @KING.CALL("cb_collect_t3")
 async def collect_dungeon_t3_rewards(client, callback_query):
