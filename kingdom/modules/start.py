@@ -31,6 +31,7 @@ async def show_stats_command(client, callback_query):
 # Callback for showing user profile
 @KING.CALL("my_profile")
 async def my_profile(client, callback_query):
+    chat_id = callback_query.chat.id
     user_id = callback_query.from_user.id
     user = await client.get_users(user_id)
     character_profile = await get_character_profile(user_id)
@@ -56,11 +57,11 @@ async def my_profile(client, callback_query):
 
     if callback_query.from_user.photo:
         photos = await client.download_media(callback_query.from_user.photo.big_file_id)
-        await bot.send_photo(user_id, photo=photos, caption=reply_text, reply_markup=InlineKeyboardMarkup(buttons))
+        await bot.send_photo(chat_id, photo=photos, caption=reply_text, reply_markup=InlineKeyboardMarkup(buttons))
         
         await aremove(photos)
     else:
-        await bot.send_message(user_id, reply_text, reply_markup=InlineKeyboardMarkup(buttons))
+        await bot.send_message(chat_id, reply_text, reply_markup=InlineKeyboardMarkup(buttons))
 
 
 
