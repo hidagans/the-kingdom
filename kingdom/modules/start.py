@@ -57,7 +57,7 @@ async def my_profile(client, callback_query):
 
     if callback_query.from_user.photo:
         photos = await client.download_media(callback_query.from_user.photo.big_file_id)
-        media = InputMediaPhoto(photo=photos, caption=reply_text)
+        media = InputMediaPhoto(media=photos, caption=reply_text)
         await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons))
         
         await aremove(photos)
