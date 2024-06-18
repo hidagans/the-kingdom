@@ -107,10 +107,9 @@ async def back_to_start(client, callback_query):
 
 # Command to create a character
 @KING.CMD("daftar")
-async def create_character(client, message):
+async def create(client, message):
     user_id = message.from_user.id
     character_profile = await get_character_profile(user_id)
-    
     if len(message.command) < 2:
         await message.reply("Anda harus mengirimkan nama karakter Anda! Contoh: /daftar John Doe")
         return
