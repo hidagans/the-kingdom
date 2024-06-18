@@ -106,7 +106,7 @@ async def back_to_start(client, callback_query):
         await callback_query.edit_message_text("Halo! Anda belum mendaftar. Silakan buat karakter Anda dengan mengirim pesan /daftar.")
 
 # Command to create a character
-@KING.CMD("daftar")
+@bot.on_message(filters.command("daftar"))
 async def create(client, message):
     user_id = message.from_user.id
     character_profile = await get_character_profile(user_id)
