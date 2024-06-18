@@ -80,7 +80,7 @@ async def start_command(client, message):
     ]
 
     if character_profile:
-        await message.reply("Selamat datang kembali! Ini profil Anda:", reply_markup=InlineKeyboardMarkup (
+        await message.reply_photo(photo="./kingdom/assets/king.jpg", caption="Selamat datang kembali! Ini profil Anda:", reply_markup=InlineKeyboardMarkup (
                 buttons
             ))
     else:
