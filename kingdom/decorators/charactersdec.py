@@ -1,4 +1,5 @@
 from kingdom.database import *
+from bson.objectid import ObjectId
 
 # Fungsi untuk menyimpan item karakter ke database
 async def give_starting_items(user_id):
