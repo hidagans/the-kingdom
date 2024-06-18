@@ -57,7 +57,7 @@ async def my_profile(client, callback_query):
 
     if callback_query.from_user.photo:
         photos = await client.download_media(callback_query.from_user.photo.big_file_id)
-        await bot.send_photo(photo=photos, caption=reply_text, reply_markup=InlineKeyboardMarkup(buttons))
+        await bot.send_photo(user_id, photo=photos, caption=reply_text, reply_markup=InlineKeyboardMarkup(buttons))
         
         await aremove(photos)
     else:
