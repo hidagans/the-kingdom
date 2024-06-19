@@ -255,9 +255,8 @@ async def create_token(user_id):
     character_profile = await get_character_profile(user_id)
     token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
     if character_profile:
-        character_profile['tokentol'] = token
 
-        await characters.update_one({"user_id": user_id}, character_profile)
+        await characters.update_one({"user_id": user_id}, {"$set": {"tokentol": token}})
     # Simpan token dalam dictionary tokens dengan user_id sebagai kuncinya
     return token
 
