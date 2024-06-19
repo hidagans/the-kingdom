@@ -395,21 +395,25 @@ async def attack(client, callback_query):
     tier = int(data[1])
 
     player_stats = await characters.find_one({"user_id": user_id})
-    monster = await get_random_monster(tier)
-    combat_result, combat_log = await handle_combat(player_stats, monster)
+    get_current_hp = player_stats['stats']['current_hp']
+    if get_current_hp > 0:
+        monster = await get_random_monster(tier)
+        combat_result, combat_log = await handle_combat(player_stats, monster)
 
-    combat_log_text = "\n".join(combat_log)
-    if combat_result:
-        await set_complete_dungeon(user_id)
-        reply_text = f"Anda telah menyelesaikan Dungeon Tier {tier}\n\n{combat_log_text}"
-    else:
-        reply_text = f"Anda kalah dalam Dungeon Tier {tier}\n\n{combat_log_text}"
+        combat_log_text = "\n".join(combat_log)
+        if combat_result:
+            await set_complete_dungeon(user_id)
+            reply_text = f"Anda telah menyelesaikan Dungeon Tier {tier}\n\n{combat_log_text}"
+        else:
+            reply_text = f"Anda kalah dalam Dungeon Tier {tier}\n\n{combat_log_text}"
 
     # Split the reply_text into multiple messages if it exceeds the limit
-    max_length = 1024
-    for i in range(0, len(reply_text), max_length):
-        part = reply_text[i:i+max_length]
-        await callback_query.edit_message_text(part)
+            max_length = 1024
+            for i in range(0, len(reply_text), max_length):
+                part = reply_text[i:i+max_length]
+                await callback_query.edit_message_text(part)
+    else:
+        await callback_query.edit_message_text("Kamu tidak memiliki cukup HP untuk memulai dungeon")
 
 loop = asyncio.get_event_loop()
 loop.create_task(check_dungeon_completion())
