@@ -27,14 +27,22 @@ async def black_market(client, callback_query):
 
 # Fungsi untuk mendapatkan daftar item dari Black Market
 async def get_blackmarket_items():
-    items = black_market_items.find({})
-    item_list = []
-    for item in items:
-        item_name = item["name"]
-        item_price = item["price"]
-        item_button = InlineKeyboardButton(f"Sell {item_name} ({item_price} Silver)", callback_data=f"sell_item_{item['name']}")
-        item_list.append([item_button])
-    return item_list
+    try:
+        cursor = black_market_items.find({})
+        item_list = []
+        
+        async for item in cursor:
+            item_name = item["name"]
+            item_price = item["price"]
+            item_button = InlineKeyboardButton(f"Sell {item_name} ({item_price} Silver)", callback_data=f"sell_item_{item['name']}")
+            item_list.append([item_button])
+        
+        return item_list
+    
+    except Exception as e:
+        print(f"Error in get_blackmarket_items: {e}")
+        return []
+
 
 # Command untuk menampilkan daftar item Black Market
 @bot.on_message(filters.command("blackmarket_items"))
