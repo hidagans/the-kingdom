@@ -357,10 +357,15 @@ async def handle_dungeon(client, callback_query, tier):
     await save_dungeon_data(user_id, status)
 
     player_stats = await characters.find_one({"user_id": user_id})
-    monster = await get_random_monster(tier)
-    reply_text = f"Dungeon Tier {tier} dimulai! melawan Monster **{monster['name']}**."
-    media = InputMediaPhoto(media=monster['photo'], caption=reply_text)
-    await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons))
+    get_current_hp = player_stats['stats']['current_hp']
+    if get_current_hp > 0:
+        monster = await get_random_monster(tier)
+        reply_text = f"Dungeon Tier {tier} dimulai! melawan Monster **{monster['name']}**."
+        media = InputMediaPhoto(media=monster['photo'], caption=reply_text)
+        await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons))
+    else:
+        reply_text = "Kamu tidak memiliki cukup HP untuk memulai dungeon."
+        await callback_query.edit_message_text(reply_text)
 
     
 
