@@ -37,7 +37,7 @@ async def get_blackmarket_items():
     return item_list
 
 # Command untuk menampilkan daftar item Black Market
-@app.on_message(filters.command("blackmarket_items"))
+@KING.CMD("blackmarket_items")
 async def blackmarket_items_command(client, message):
     try:
         item_list = await get_blackmarket_items()
@@ -51,7 +51,7 @@ async def blackmarket_items_command(client, message):
         await message.reply_text("Terjadi kesalahan dalam memuat daftar item Black Market.")
 
 # Callback untuk menjual item
-@app.on_callback_query(filters.regex(r"^sell_item_"))
+@KING.CALL(r"^sell_item_")
 async def sell_item_callback(client, callback_query):
     try:
         item_name = callback_query.data.split("_", 2)[2]  # Ambil nama item dari callback_data
