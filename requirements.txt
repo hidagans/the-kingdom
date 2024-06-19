@@ -4,3 +4,4 @@ TgCrypto
 motor
 xendit
 pyromod
+numpy

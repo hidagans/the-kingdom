@@ -24,7 +24,7 @@ async def show_token(client, callback_query):
     if token:
         await callback_query.edit_message_text(token, reply_markup=reply_markup)
     
-    if not token: 
+    else: 
         await callback_query.edit_message_text("kamu tidak punya token silahkan buat terlebih dahulu.", reply_markup=reply_markup)
 # Fungsi handler untuk perintah /create_token
 @KING.CALL("create_token")

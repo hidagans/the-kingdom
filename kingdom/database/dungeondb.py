@@ -7,6 +7,14 @@ from kingdom import bot
 import random
 from kingdom.decorators import *
 import pymongo
+from numpy import np
+
+chests = [
+    {"type": "Green", "silver_reward": 1000, "exp_reward": 50, "skill_point_reward": 0.1, "probability": 0.5},
+    {"type": "Blue", "silver_reward": 2000, "exp_reward": 100, "skill_point_reward": 0.15, "probability": 0.3},
+    {"type": "Purple", "silver_reward": 3000, "exp_reward": 150, "skill_point_reward": 0.2, "probability": 0.15},
+    {"type": "Gold", "silver_reward": 5000, "exp_reward": 200, "skill_point_reward": 0.25, "probability": 0.05},
+]
 
 async def get_random_monster(tier):
     monsters = {
@@ -133,31 +141,27 @@ async def get_random_monster(tier):
     }
     return random.choice(monsters[tier])
 
+def get_random_chest():
+    chest_types = [chest['type'] for chest in chests]
+    probabilities = [chest['probability'] for chest in chests]
+    chosen_chest_type = np.random.choice(chest_types, p=probabilities)
+    chosen_chest = next(chest for chest in chests if chest['type'] == chosen_chest_type)
+    return chosen_chest
 
-async def get_random_item(collection_name):
-    collection = getattr(db, collection_name)
-    random_item = await collection.aggregate([{ "$sample": { "size": 1 } }]).to_list(1)
-    return random_item[0] if random_item else None
-
-async def add_item_to_inventory(user_id, item):
-    if item:
-        item_type = item['armor_type'].lower()
-        if item_type in ["headarmor", "bodyarmor", "footarmor", "weapons"]:
-            try:
-                character = await characters.find_one({"user_id": user_id})
-                if character:
-                    inventory = character.get("inventory", [])
-                    inventory.append(item)
-                    await characters.update_one(
-                        {"user_id": user_id},
-                        {"$set": {"inventory": inventory}}
-                    )
-                else:
-                    await characters.insert_one({"user_id": user_id, "inventory": [item]})
-            except Exception as e:
-                print(f"Error adding item to inventory: {e}")
+async def add_chest_to_inventory(user_id, chest_type):
+    try:
+        character = await characters.find_one({"user_id": user_id})
+        if character:
+            chests = character.get("chests", [])
+            chests.append(chest_type)
+            await characters.update_one(
+                {"user_id": user_id},
+                {"$set": {"chests": chests}}
+            )
         else:
-            print(f"Item {item['name']} tidak ditambahkan karena tipe tidak valid.")
+            await characters.insert_one({"user_id": user_id, "chests": [chest_type]})
+    except Exception as e:
+        print(f"Error adding chest to inventory: {e}")
 
 async def get_users_in_dungeon():
     users_in_dungeon = []
@@ -210,31 +214,22 @@ async def complete_dungeon(user_id):
     await delete_dungeon_data(user_id)
 
 async def give_dungeon_rewards(user_id):
-    item_collections = ["bodyarmors", "headarmors", "footarmors", "weapons"]
-    random_collection = random.choice(item_collections)
-    random_item = await get_random_item("bodyarmors")
-    silver_reward = 3000
-    exp_reward = 100
-    skill_point_reward = 0.25
+    random_chest = get_random_chest()
     
     message_text = f"Selamat! Anda telah menyelesaikan dungeon!\n"
-    message_text += f"Anda mendapatkan:\n"
-    message_text += f"Silver: {silver_reward}\n"
-    message_text += f"EXP: {exp_reward}\n"
-    message_text += f"Skill Points: {skill_point_reward}\n"
-    message_text += f"Item: ({random_item['type']})\n"
+    message_text += f"Anda mendapatkan chest: {random_chest['type']}\n"
 
-    await add_item_to_inventory(user_id, random_item)
-    await add_silver(user_id, silver_reward)
-    await add_exp(user_id, exp_reward)
-    await add_skill_points(user_id, skill_point_reward)
-    await save_dungeon_rewards_to_character(user_id, silver_reward, exp_reward, skill_point_reward, random_item)
-    
-    # Split the message text if it exceeds the limit
+    # Simpan chest ke inventaris pemain
+    await add_chest_to_inventory(user_id, random_chest['type'])
+
+    # Tambahkan tombol untuk membuka chest
+    buttons = [
+        [InlineKeyboardButton("Buka Chest", callback_data=f"open_chest {random_chest['type']}")]
+    ]
     max_length = 1024
     for i in range(0, len(message_text), max_length):
         part = message_text[i:i+max_length]
-        await bot.send_message(user_id, part)
+        await bot.send_message(user_id, part, reply_markup=InlineKeyboardMarkup(buttons))
 
 async def damage_log_dungeon(user_id):
     character = await characters.find_one({"user_id": user_id})
@@ -248,7 +243,7 @@ async def save_damage_log(user_id):
 async def cancel_dungeon(user_id):
     await delete_dungeon_data(user_id)
 
-async def save_dungeon_rewards_to_character(user_id, silver_reward, exp_reward, skill_point_reward, item):
+async def save_dungeon_rewards_to_character(user_id, silver_reward, exp_reward, skill_point_reward):
     character_profile = await get_character_profile(user_id)
     if character_profile:
         exp_previous = character_profile.get('stats', {}).get('Exp', 0)
@@ -264,9 +259,6 @@ async def save_dungeon_rewards_to_character(user_id, silver_reward, exp_reward, 
         character_profile['currency']['Silver'] = silver_new
         character_profile['stats']['Exp'] = exp_new
         character_profile['stats']['Skill Points'] = skill_point_new
-
-        if item:
-            await add_item_to_inventory(user_id, item)
 
         await save_character_profile(user_id, character_profile)
 
