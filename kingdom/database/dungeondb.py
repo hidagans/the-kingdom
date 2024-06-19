@@ -368,8 +368,8 @@ async def handle_dungeon(client, callback_query, tier):
 
     player_stats = await characters.find_one({"user_id": user_id})
     monster = await get_random_monster(tier)
-    media = InputMediaPhoto(media=monster['photo'], caption=reply_text)
     reply_text = f"Dungeon Tier {tier} dimulai! melawan Monster **{monster['name']}**."
+    media = InputMediaPhoto(media=monster['photo'], caption=reply_text)
     await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons))
 
     
