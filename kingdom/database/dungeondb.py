@@ -395,7 +395,7 @@ async def attack(client, callback_query):
     data = callback_query.data.split()
     user_id = callback_query.from_user.id
     await callback_query.edit_message_text("Bertarung")
-    await callback_query.reply("⚔️ Attacking ⚔️")
+    await callback_query.edit_message_text("⚔️ Attacking ⚔️")
     tier = int(data[1])
 
     player_stats = await characters.find_one({"user_id": user_id})
