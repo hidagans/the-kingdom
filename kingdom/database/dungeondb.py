@@ -359,7 +359,7 @@ async def handle_dungeon(client, callback_query, tier):
         ]
     ]
     media = InputMediaPhoto(media="./kingdom/monster/dungeon.jpeg", caption="Dungeon akan segera dimulai")
-    ya = await bot.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons_cancel))
+    ya = await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons_cancel))
     await asyncio.sleep(5)
     await ya.delete()
 
