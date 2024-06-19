@@ -44,7 +44,6 @@ async def get_blackmarket_items():
         return []
 
 
-# Command untuk menampilkan daftar item Black Market
 @bot.on_message(filters.command("blackmarket_items"))
 async def blackmarket_items_command(client, message):
     try:
@@ -57,6 +56,7 @@ async def blackmarket_items_command(client, message):
     except Exception as e:
         print(f"Error: {e}")
         await message.reply_text("Terjadi kesalahan dalam memuat daftar item Black Market.")
+
 
 # Callback untuk menjual item
 @KING.CALL(r"^sell_item_")
