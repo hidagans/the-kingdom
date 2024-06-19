@@ -21,62 +21,69 @@ async def give_starting_items(user_id):
         item = level_1_weapons[0]
         starting_items["weapons"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "type": item.get("type"),
-            "name": item.get("name"),
-            "Level": item.get("Level"),
-            "item_power": item.get("item_power"),
-            "damage": item.get("damage"),
-            "defense": item.get("defense"),
-            "magic_attack": item.get("magic_attack"),
-            "attack_speed": item.get("attack_speed"),
-            "armor_type": item.get("armor_type")
+            "type": item["type"],
+            "name": item["name"],
+            "Level": item["Level"],
+            "item_power": item["item_power"],
+            "damage": item["damage"],
+            "defense": item["defense"],
+            "magic_attack": item["magic_attack"],
+            "attack_speed": item["attack_speed"],
+            "armor_type": item["armor_type"]
         }
     
     if level_1_headarmor:
         item = level_1_headarmor[0]
         starting_items["headarmor"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "type": item.get("type"),
-            "name": item.get("name"),
-            "Level": item.get("Level"),
-            "item_power": item.get("item_power"),
-            "damage": item.get("damage"),
-            "defense": item.get("defense"),
-            "magic_attack": item.get("magic_attack"),
-            "attack_speed": item.get("attack_speed"),
-            "armor_type": item.get("armor_type")
+            "type": item["type"],
+            "name": item["name"],
+            "Level": item["Level"],
+            "item_power": item["item_power"],
+            "max_hp": item["max_hp"],
+            "max_mana": item["max_mana"],
+            "defense": item["defense"],
+            "damage": item["damage"],
+            "damage_increase": item["damage_increase"],
+            "attack_speed": item["attack_speed"],
+            "armor_type": item["armor_type"]
         }
     
     if level_1_bodyarmor:
         item = level_1_bodyarmor[0]
         starting_items["bodyarmor"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "type": item.get("type"),
-            "name": item.get("name"),
-            "Level": item.get("Level"),
-            "item_power": item.get("item_power"),
-            "damage": item.get("damage"),
-            "defense": item.get("defense"),
-            "magic_attack": item.get("magic_attack"),
-            "attack_speed": item.get("attack_speed"),
-            "armor_type": item.get("armor_type")
+            "type": item["type"],
+            "name": item["name"],
+            "Level": item["Level"],
+            "item_power": item["item_power"],
+            "max_hp": item["max_hp"],
+            "max_mana": item["max_mana"],
+            "defense": item["defense"],
+            "damage": item["damage"],
+            "damage_increase": item["damage_increase"],
+            "attack_speed": item["attack_speed"],
+            "armor_type": item["armor_type"]
         }
     
     if level_1_footarmor:
         item = level_1_footarmor[0]
         starting_items["footarmor"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "type": item.get("type"),
-            "name": item.get("name"),
-            "Level": item.get("Level"),
-            "item_power": item.get("item_power"),
-            "damage": item.get("damage"),
-            "defense": item.get("defense"),
-            "magic_attack": item.get("magic_attack"),
-            "attack_speed": item.get("attack_speed"),
-            "armor_type": item.get("armor_type")
+            "type": item["type"],
+            "name": item["name"],
+            "Level": item["Level"],
+            "item_power": item["item_power"],
+            "max_hp": item["max_hp"],
+            "max_mana": item["max_mana"],
+            "defense": item["defense"],
+            "damage": item["damage"],
+            "damage_increase": item["damage_increase"],
+            "attack_speed": item["attack_speed"],
+            "armor_type": item["armor_type"]
         }
     
     # Perbarui equipment karakter dengan item awal
     await characters.update_one({"user_id": user_id}, {"$set": {"equipment": starting_items}})
+
 
