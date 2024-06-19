@@ -37,7 +37,7 @@ async def get_blackmarket_items():
     return item_list
 
 # Command untuk menampilkan daftar item Black Market
-@KING.CMD("blackmarket_items")
+@bot.on_message(filters.command("blackmarket_items"))
 async def blackmarket_items_command(client, message):
     try:
         item_list = await get_blackmarket_items()
