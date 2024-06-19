@@ -293,7 +293,6 @@ async def combat(user_id, monster):
         return "Karakter tidak ditemukan.", []
 
     stats = character.get("stats", {})
-    max_hp = stats.get("max_hp")
     current_hp = stats.get("current_hp")
     attack = stats.get("damage")
     defense = stats.get("defense")
@@ -329,7 +328,7 @@ async def combat(user_id, monster):
     else:
         combat_result = f"Kamu dikalahkan oleh {monster['name']}."
 
-    character['characters_hp'] = current_hp
+    character['stats']['current_hp'] = current_hp
     await characters.update_one({"user_id": user_id}, {"$set": character})
 
     return combat_result, battle_log
