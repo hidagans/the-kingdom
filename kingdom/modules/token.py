@@ -8,7 +8,10 @@ from kingdom.database import *
 async def show_token(client, callback_query):
     user_id = callback_query.from_user.id
     character_profile = await get_character_profile(user_id)
-    token = character_profile['tokentol']
+    
+    # Gunakan get() dengan nilai default None
+    token = character_profile.get('tokentol', None)
+    
     buttons = [
         [
             InlineKeyboardButton("CREATE TOKEN", callback_data="cb_create_token"),
@@ -21,11 +24,12 @@ async def show_token(client, callback_query):
     ]
     
     reply_markup = InlineKeyboardMarkup(buttons)
+    
     if token:
         await callback_query.edit_message_text(token, reply_markup=reply_markup)
-    
     else: 
         await callback_query.edit_message_text("kamu tidak punya token silahkan buat terlebih dahulu.", reply_markup=reply_markup)
+
 # Fungsi handler untuk perintah /create_token
 @KING.CALL("create_token")
 async def create_token_handler(client, callback_query):
