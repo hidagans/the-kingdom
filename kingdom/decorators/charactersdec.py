@@ -1,7 +1,6 @@
 from kingdom.database import *
 from bson.objectid import ObjectId
 
-# Fungsi untuk menyimpan item karakter ke database
 async def give_starting_items(user_id):
     # Ambil item dengan level 1 dari masing-masing koleksi
     level_1_weapons = await weapons.find({"Level": "1"}).to_list(None)
@@ -17,35 +16,67 @@ async def give_starting_items(user_id):
         "footarmor": None
     }
     
-    # Iterasi melalui item dengan level 1 dan tambahkan ke starting_items
-    for item in level_1_weapons:
+    # Pilih satu item dari setiap kategori dan tambahkan ke starting_items
+    if level_1_weapons:
+        item = level_1_weapons[0]
         starting_items["weapons"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "name": item["name"],
-            "Level": item["Level"],
-            "item_power": item["item_power"]
+            "type": item.get("type"),
+            "name": item.get("name"),
+            "Level": item.get("Level"),
+            "item_power": item.get("item_power"),
+            "damage": item.get("damage"),
+            "defense": item.get("defense"),
+            "magic_attack": item.get("magic_attack"),
+            "attack_speed": item.get("attack_speed"),
+            "armor_type": item.get("armor_type")
         }
-    for item in level_1_headarmor:
+    
+    if level_1_headarmor:
+        item = level_1_headarmor[0]
         starting_items["headarmor"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "name": item["name"],
-            "Level": item["Level"],
-            "item_power": item["item_power"]
+            "type": item.get("type"),
+            "name": item.get("name"),
+            "Level": item.get("Level"),
+            "item_power": item.get("item_power"),
+            "damage": item.get("damage"),
+            "defense": item.get("defense"),
+            "magic_attack": item.get("magic_attack"),
+            "attack_speed": item.get("attack_speed"),
+            "armor_type": item.get("armor_type")
         }
-    for item in level_1_bodyarmor:
+    
+    if level_1_bodyarmor:
+        item = level_1_bodyarmor[0]
         starting_items["bodyarmor"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "name": item["name"],
-            "Level": item["Level"],
-            "item_power": item["item_power"]
+            "type": item.get("type"),
+            "name": item.get("name"),
+            "Level": item.get("Level"),
+            "item_power": item.get("item_power"),
+            "damage": item.get("damage"),
+            "defense": item.get("defense"),
+            "magic_attack": item.get("magic_attack"),
+            "attack_speed": item.get("attack_speed"),
+            "armor_type": item.get("armor_type")
         }
-    for item in level_1_footarmor:
+    
+    if level_1_footarmor:
+        item = level_1_footarmor[0]
         starting_items["footarmor"] = {
             "_id": ObjectId(),  # Tambahkan ObjectId baru
-            "name": item["name"],
-            "Level": item["Level"],
-            "item_power": item["item_power"]
+            "type": item.get("type"),
+            "name": item.get("name"),
+            "Level": item.get("Level"),
+            "item_power": item.get("item_power"),
+            "damage": item.get("damage"),
+            "defense": item.get("defense"),
+            "magic_attack": item.get("magic_attack"),
+            "attack_speed": item.get("attack_speed"),
+            "armor_type": item.get("armor_type")
         }
     
     # Perbarui equipment karakter dengan item awal
     await characters.update_one({"user_id": user_id}, {"$set": {"equipment": starting_items}})
+
