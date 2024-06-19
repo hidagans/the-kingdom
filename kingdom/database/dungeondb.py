@@ -368,9 +368,9 @@ async def handle_dungeon(client, callback_query, tier):
 
     player_stats = await characters.find_one({"user_id": user_id})
     monster = await get_random_monster(tier)
-
+    media = InputMediaPhoto(media=monster['photo'], caption=reply_text)
     reply_text = f"Dungeon Tier {tier} dimulai! melawan Monster **{monster['name']}**."
-    await client.send_photo(user_id, photo=monster['photo'], caption=reply_text, reply_markup=InlineKeyboardMarkup(buttons))
+    await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons))
 
     
 
@@ -414,7 +414,7 @@ async def attack(client, callback_query):
     max_length = 1024
     for i in range(0, len(reply_text), max_length):
         part = reply_text[i:i+max_length]
-        await client.send_message(user_id, part)
+        await callback_query.edit_message_text(part)
 
 loop = asyncio.get_event_loop()
 loop.create_task(check_dungeon_completion())
