@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from kingdom import bot
 import random
 from kingdom.decorators import *
-import pymongo
 import numpy as np
 
 chests = [

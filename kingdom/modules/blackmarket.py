@@ -25,68 +25,79 @@ async def black_market(client, callback_query):
     
     await callback_query.edit_message_text("Black Market", reply_markup=black_market_markup)
 
-@KING.CALL("black_market_menu")
-async def black_market_menu(client, callback_query):
-    location = -1002074292027
-    map_data = await get_maps(location)
-    
-    black_market_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("Sell Item", callback_data="sell_item")],
-        [InlineKeyboardButton("BACK", callback_data="start")]
-    ])
-    
-    if map_data:
-        await callback_query.edit_message_text("Welcome to the Black Market!", reply_markup=black_market_markup)
-    else:
-        back_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("Go To Location", callback_data="travel_to_nightshade")],
-            [InlineKeyboardButton("BACK", callback_data="start")]
-        ])
-        await callback_query.edit_message_text("You are not in the correct location.", reply_markup=back_markup)
+# Fungsi untuk mendapatkan daftar item dari Black Market
+async def get_blackmarket_items():
+    items = black_market_items.find({})
+    item_list = []
+    for item in items:
+        item_name = item["name"]
+        item_price = item["price"]
+        item_button = InlineKeyboardButton(f"Sell {item_name} ({item_price} Silver)", callback_data=f"sell_item_{item['name']}")
+        item_list.append([item_button])
+    return item_list
 
-@KING.CMD("sell_item")
-async def sell_item(client, message):
+# Command untuk menampilkan daftar item Black Market
+@app.on_message(filters.command("blackmarket_items"))
+async def blackmarket_items_command(client, message):
     try:
-        command_parts = message.text.split(' ', 1)
-        if len(command_parts) != 2:
-            await message.reply_text("Gunakan: /sell_item <nama_item>")
-            return
+        item_list = await get_blackmarket_items()
+        if item_list:
+            reply_markup = InlineKeyboardMarkup(item_list)
+            await message.reply_text("Daftar Item di Black Market:", reply_markup=reply_markup)
+        else:
+            await message.reply_text("Tidak ada item yang tersedia di Black Market saat ini.")
+    except Exception as e:
+        print(f"Error: {e}")
+        await message.reply_text("Terjadi kesalahan dalam memuat daftar item Black Market.")
 
-        item_name = command_parts[1]
+# Callback untuk menjual item
+@app.on_callback_query(filters.regex(r"^sell_item_"))
+async def sell_item_callback(client, callback_query):
+    try:
+        item_name = callback_query.data.split("_", 2)[2]  # Ambil nama item dari callback_data
+        user_id = callback_query.from_user.id
         
-        character = await characters.find_one({"user_id": message.from_user.id})
+        # Ambil data karakter dan inventory
+        character = await characters.find_one({"user_id": user_id})
         if not character:
-            await message.reply_text("Karakter tidak ditemukan.")
+            await callback_query.answer("Karakter tidak ditemukan.")
             return
-
-        inventory = characters.get("inventory", [])
+        
+        inventory = character.get("inventory", [])
         item_to_sell = next((item for item in inventory if item['name'].lower() == item_name.lower()), None)
-
+        
         if not item_to_sell:
-            await message.reply_text(f"Anda tidak memiliki item '{item_name}' di inventory.")
+            await callback_query.answer(f"Anda tidak memiliki item '{item_name}' di inventory.")
             return
-
-        item_price = item_to_sell.get("price", 100)
-
+        
+        black_market = get_blackmarket_items(item_to_sell)
+        price = black_market[price]
+        
+        # Menghapus item dari inventory
         inventory.remove(item_to_sell)
-
+        
+        # Update inventory karakter di database
         await characters.update_one(
-            {"user_id": message.from_user.id},
+            {"user_id": user_id},
             {"$set": {"inventory": inventory}}
         )
-
-        await black_market.insert_one(item_to_sell)
-
-        gold = character.get("gold", 0) + item_price
+        
+        # Simpan atau lakukan operasi lain sesuai kebutuhan game Anda
+        # Misalnya, tambahkan gold ke karakter
+        current_gold = character.get("currency", "Silver", 0)
+        new_silver = current_gold + price
         await characters.update_one(
-            {"user_id": message.from_user.id},
-            {"$set": {"gold": gold}}
+            {"user_id": user_id},
+            {"$set": {"currency": {"silver": new_silver}}}
         )
-
-        await message.reply_text(f"Item '{item_name}' berhasil dijual seharga {item_price} koin emas.")
+        
+        await callback_query.answer(f"Item '{item_name}' berhasil dijual seharga {price} Silver.")
+    
     except Exception as e:
-        print(f"Error in sell_item: {e}")
-        await message.reply_text("Terjadi kesalahan saat menjual item.")
+        print(f"Error: {e}")
+        await callback_query.answer("Terjadi kesalahan saat menjual item.")
+
+
 
 @KING.CALL("travel_to_nightshade")
 async def travel_to_nightshade(client, callback_query):
