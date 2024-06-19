@@ -345,7 +345,6 @@ async def combat(user_id, monster):
 
 
 async def handle_dungeon(client, callback_query, tier):
-    await callback_query.message.delete()
     user_id = callback_query.from_user.id
     in_dungeon = await is_in_dungeon(user_id)
     buttons = [
@@ -359,7 +358,8 @@ async def handle_dungeon(client, callback_query, tier):
             InlineKeyboardButton("Batal", callback_data="cancel_dungeon"),
         ]
     ]
-    ya = await bot.send_photo(user_id, photo="./kingdom/monster/dungeon.jpeg", caption="Dungeon akan segera dimulai.", reply_markup=InlineKeyboardMarkup(buttons_cancel))
+    media = InputMediaPhoto(media="./kingdom/monster/dungeon.jpeg", caption="Dungeon akan segera dimulai")
+    ya = await bot.edit_message_media(reply_markup=InlineKeyboardMarkup(buttons_cancel))
     await asyncio.sleep(5)
     await ya.delete()
 
