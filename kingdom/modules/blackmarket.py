@@ -28,7 +28,7 @@ async def black_market(client, callback_query):
 # Fungsi untuk mendapatkan daftar item dari Black Market
 async def get_blackmarket_items():
     try:
-        cursor = black_market_items.find({})
+        cursor = blackmarket_items.find({})
         item_list = []
         
         async for item in cursor:
