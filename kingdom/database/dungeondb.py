@@ -302,7 +302,7 @@ async def combat(user_id, monster):
 
     stats = character.get("stats", {})
     max_hp = stats.get("max_hp")
-    current_hp = character.get("characters_hp", max_hp)
+    current_hp = stats.get("current_hp")
     attack = stats.get("damage")
     defense = stats.get("defense")
 
