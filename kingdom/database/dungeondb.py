@@ -224,7 +224,7 @@ async def give_dungeon_rewards(user_id):
 
     # Tambahkan tombol untuk membuka chest
     buttons = [
-        [InlineKeyboardButton("Buka Chest", callback_data=f"open_chest {random_chest['type']}")]
+        [InlineKeyboardButton("Buka Chest", url="https://t.me/tkgame_bot/kingdom")]
     ]
     max_length = 1024
     for i in range(0, len(message_text), max_length):
