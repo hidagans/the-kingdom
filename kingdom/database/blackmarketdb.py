@@ -15,7 +15,7 @@ async def add_item_to_dungeon_rewards():
     item = await get_random_black_market_item()
     if item:
         # Tambahkan item ke pool hadiah dungeon
-        await black_market.insert_one(item)
+        await dungeon_rewards.insert_one(item)
         # Hapus item dari black market
         await black_market.delete_one({"_id": item["_id"]})
         print(f"Item '{item['name']}' telah ditambahkan ke pool hadiah dungeon.")
