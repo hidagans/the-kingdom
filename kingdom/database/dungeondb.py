@@ -7,7 +7,7 @@ from kingdom import bot
 import random
 from kingdom.decorators import *
 import pymongo
-from numpy import np
+import numpy as np
 
 chests = [
     {"type": "Green", "silver_reward": 1000, "exp_reward": 50, "skill_point_reward": 0.1, "probability": 0.5},
