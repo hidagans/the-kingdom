@@ -361,9 +361,7 @@ async def use_potion(user_id, potion_name):
 
         # Cari potion dalam inventory karakter
         inventory = character.get("inventory", [])
-        # Cari potion dalam inventory karakter
         potion_to_use = next((item for item in inventory if item['name'].lower() == potion_name.lower() and item['item_type'] == 'potions'), None)
-
 
         if not potion_to_use:
             return f"Anda tidak memiliki potion '{potion_name}' di inventory."
@@ -380,7 +378,6 @@ async def use_potion(user_id, potion_name):
         # Terapkan efek dari potion
         effect_message = ""
         if potion_to_use['item_type'] == "potions":
-            # Contoh efek untuk Minor Healing Potion Tier 1
             regen_hp = potion_to_use.get('regen_hp', 0)
             duration = potion_to_use.get('duration', 0)
 
@@ -403,7 +400,6 @@ async def use_potion(user_id, potion_name):
     except Exception as e:
         print(f"Error in use_potion: {e}")
         return "Terjadi kesalahan saat menggunakan potion."
- 
 
 async def trash_item(user_id, item_type, item_name):
     try:
