@@ -1,4 +1,5 @@
 from .__mongo import *
+from bson.objectid import ObjectId
 
 async def add_potion_to_inventory(potion_name, quantity, user_id):
     # Cari potion berdasarkan nama
