@@ -29,7 +29,7 @@ for potion_type, tiers in potion_data.items():
             "item_power": potion_info["item_power"],
             "regen_hp": potion_info["regen_hp"],
             "duration": potion_info["duration"],
-            "potion_type": "Regen HP"
+            "item_type": "potions"
         }
         # Masukkan dokumen ke dalam koleksi potions
         collection.insert_one(potion_document)
