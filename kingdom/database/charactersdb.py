@@ -305,7 +305,7 @@ async def show_items(user_id, item_type, start=0, limit=1):
             item_buttons = []
             for action in ["use", "sell", "trash"]:
                 callback_data = f"{action}:{item_type}:{item['name']}"
-                item_buttons.append(InlineKeyboardButton(f"{action.capitalize()}", callback_data=callback_data))
+                item_buttons.append(InlineKeyboardButton(f"{action.capitalize()} {item['name']}", callback_data=callback_data))
             keyboard.append(item_buttons)
 
         navigation_buttons = []
@@ -314,7 +314,7 @@ async def show_items(user_id, item_type, start=0, limit=1):
         navigation_buttons.append(InlineKeyboardButton("Back", callback_data="cb_inventory"))
         keyboard.append(navigation_buttons)
 
-        return f"{item['name']}", InlineKeyboardMarkup(keyboard)
+        return f"{item_type.capitalize()} ({start+1} - {end} dari {len(items)}) :", InlineKeyboardMarkup(keyboard)
     except Exception as e:
         print(f"Error in show_items: {e}")
         return "Terjadi kesalahan dalam menampilkan item.", None
@@ -515,7 +515,7 @@ async def get_user_inventory(user_id):
             inventory_data = {"headarmor": [], "bodyarmor": [], "footarmor": [], "weapons": [], "potions": []}
 
             for item in inventory:
-                item_type = item.get("armor_type", "weapons")
+                item_type = item.get("armor_type", "weapons")  # Ubah ke "item_type" sesuai dengan struktur data
                 if item_type in inventory_data:
                     inventory_data[item_type].append(item)
 
