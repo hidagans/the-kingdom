@@ -364,6 +364,7 @@ async def use_potion(user_id, potion_name):
         potion_to_use = next((item for item in inventory if item['name'].lower() == potion_name.lower() and item.get('item_type') == 'potions'), None)
 
         if not potion_to_use:
+            print(f"Inventory karakter untuk user_id {user_id}: {inventory}")
             return f"Anda tidak memiliki potion '{potion_name}' di inventory."
 
         # Hapus potion dari inventory pengguna
