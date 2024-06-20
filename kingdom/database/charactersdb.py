@@ -364,6 +364,7 @@ async def use_potion(user_id, potion_name):
         potion_to_use = next((item for item in inventory if item['name'].lower() == potion_name.lower() and item.get('item_type') == 'potions'), None)
 
         if not potion_to_use:
+            # Debugging: Tambahkan pesan untuk memeriksa isi inventory
             print(f"Inventory karakter untuk user_id {user_id}: {inventory}")
             return f"Anda tidak memiliki potion '{potion_name}' di inventory."
 
@@ -401,6 +402,7 @@ async def use_potion(user_id, potion_name):
     except Exception as e:
         print(f"Error in use_potion: {e}")
         return "Terjadi kesalahan saat menggunakan potion."
+
 
 async def trash_item(user_id, item_type, item_name):
     try:
