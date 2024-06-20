@@ -4,7 +4,7 @@ from bson.objectid import ObjectId
 async def add_potion_to_inventory(potion_name, quantity, user_id):
     # Cari potion berdasarkan nama
     characters_data = await characters.find_one({"user_id": user_id})
-    potion = potions.find_one({"name": potion_name})
+    potion = await potions.find_one({"name": potion_name})
     if potion:
         inventory = characters_data.get('inventory', [])
         inventory.append(potion)
