@@ -52,6 +52,57 @@ async def item_action_command(client, callback_query):
     
     await callback_query.edit_message_text(response_message)
 
+async def use_potion(user_id, potion_name):
+    try:
+        # Cari karakter pengguna dalam database berdasarkan user_id
+        character = await characters.find_one({"user_id": user_id})
+        if not character:
+            return "Karakter tidak ditemukan."
+
+        # Cari potion dalam inventory karakter
+        inventory = character.get("inventory", [])
+        potion_to_use = next((item for item in inventory if item['name'].lower() == potion_name.lower() and item['type'] == 'potions'), None)
+
+        if not potion_to_use:
+            return f"Anda tidak memiliki potion '{potion_name}' di inventory."
+
+        # Hapus potion dari inventory pengguna
+        inventory.remove(potion_to_use)
+
+        # Perbarui inventory pengguna di database
+        await characters.update_one(
+            {"user_id": user_id},
+            {"$set": {"inventory": inventory}}
+        )
+
+        # Terapkan efek dari potion
+        effect_message = ""
+        if potion_to_use['item_type'] == "potions":
+            # Contoh efek untuk Minor Healing Potion Tier 1
+            regen_hp = potion_to_use.get('regen_hp', 0)
+            duration = potion_to_use.get('duration', 0)
+
+            # Regenerasi HP
+            current_hp = character.get('current_hp', 0)
+            max_hp = character.get('max_hp', 0)
+            new_hp = min(current_hp + regen_hp, max_hp)  # Pastikan tidak melebihi max_hp
+
+            # Update current_hp di database
+            await characters.update_one(
+                {"user_id": user_id},
+                {"$set": {"current_hp": new_hp}}
+            )
+
+            effect_message = f"Regenerasi HP sebesar {regen_hp}. "
+
+        # Contoh untuk efek lainnya bisa ditambahkan sesuai dengan kebutuhan
+
+        return f"Potion '{potion_name}' berhasil digunakan. {effect_message}"
+    except Exception as e:
+        print(f"Error in use_potion: {e}")
+        return "Terjadi kesalahan saat menggunakan potion."
+
+
 @KING.CALL("cb_konten")
 async def konten_menu(client, callback_query):
     buttons = [
