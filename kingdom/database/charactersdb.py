@@ -515,7 +515,7 @@ async def get_user_inventory(user_id):
             inventory_data = {"headarmor": [], "bodyarmor": [], "footarmor": [], "weapons": [], "potions": []}
 
             for item in inventory:
-                item_type = item.get("armor_type", "weapons")  # Ubah ke "item_type" sesuai dengan struktur data
+                item_type = item.get("armor_type", "weapons") if "armor_type" in item else item.get("item_type", "potions")
                 if item_type in inventory_data:
                     inventory_data[item_type].append(item)
 
@@ -525,7 +525,6 @@ async def get_user_inventory(user_id):
     except Exception as e:
         print(f"Error in get_user_inventory: {e}")
         return {}
-
     
 async def get_user_equipment(user_id):
     try:
