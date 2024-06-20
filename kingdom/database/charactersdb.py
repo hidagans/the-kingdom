@@ -512,7 +512,7 @@ async def get_user_inventory(user_id):
 
         if character:
             inventory = character.get("inventory", [])
-            inventory_data = {"headarmor": [], "bodyarmor": [], "footarmor": [], "weapons": [], "potions"}
+            inventory_data = {"headarmor": [], "bodyarmor": [], "footarmor": [], "weapons": [], "potions": []}
 
             for item in inventory:
                 item_type = item.get("armor_type", "weapons")
