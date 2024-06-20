@@ -10,3 +10,4 @@ from .guilddb import *
 from .worldbossdb import *
 from .pvpdb import *
 from .leaderboards import *
+from .owner import *
