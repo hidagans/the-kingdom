@@ -1,4 +1,4 @@
-import .__mongo
+from .__mongo import *
 
 async def add_potion_to_inventory(potion_name, quantity, user_id):
     # Cari potion berdasarkan nama
