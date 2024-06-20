@@ -33,7 +33,7 @@ async def category_items_command(client, callback_query):
     else:
         await callback_query.answer(inventory_message)
 
-@KING.CALL(r"(use|sell|trash):(headarmor|bodyarmor|footarmor|weapons):(.+)")
+@KING.CALL(r"(use|sell|trash):(headarmor|bodyarmor|footarmor|weapons|potions):(.+)")
 async def item_action_command(client, callback_query):
     data = callback_query.data.split(":")
     action = data[0]
@@ -41,7 +41,10 @@ async def item_action_command(client, callback_query):
     item_name = data[2]
 
     if action == "use":
-        response_message = await use_item(callback_query.from_user.id, item_type, item_name)
+        if item_type == "potions":
+            response_message = await use_potion(callback_query.from_user.id, item_name)
+        else:
+            response_message = await use_item(callback_query.from_user.id, item_type, item_name)
     elif action == "sell":
         response_message = await sell_item(callback_query.from_user.id, item_type, item_name)
     elif action == "trash":
