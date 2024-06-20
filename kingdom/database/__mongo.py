@@ -41,3 +41,4 @@ worldbosstime = db.worldbosstime
 world_boss_rewards = db.world_boss_rewards
 open_world_chess_rewards = db.open_world_chess_rewards
 dungeon_rewards = db.dungeon_rewards
+potions = db.potions
