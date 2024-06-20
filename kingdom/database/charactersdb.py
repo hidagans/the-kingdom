@@ -5,6 +5,10 @@ from pyromod import listen
 import logging
 from pyrogram.types import *
 from config import XP_PER_LEVEL, XP_INCREMENT
+import logging
+
+# Atur konfigurasi logging (opsional, bisa disesuaikan dengan kebutuhan)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 async def get_character_profile(user_id):
     try:
@@ -354,6 +358,8 @@ async def use_item(user_id, item_type, item_name):
 
 async def use_potion(user_id, potion_name):
     try:
+        logging.debug(f"Mencoba menggunakan potion '{potion_name}' untuk user_id: {user_id}")
+
         # Cari karakter pengguna dalam database berdasarkan user_id
         character = await characters.find_one({"user_id": user_id})
         if not character:
@@ -364,8 +370,7 @@ async def use_potion(user_id, potion_name):
         potion_to_use = next((item for item in inventory if item['name'].lower() == potion_name.lower() and item.get('item_type') == 'potions'), None)
 
         if not potion_to_use:
-            # Debugging: Tambahkan pesan untuk memeriksa isi inventory
-            print(f"Inventory karakter untuk user_id {user_id}: {inventory}")
+            logging.debug(f"Inventory karakter untuk user_id {user_id}: {inventory}")
             return f"Anda tidak memiliki potion '{potion_name}' di inventory."
 
         # Hapus potion dari inventory pengguna
@@ -400,9 +405,8 @@ async def use_potion(user_id, potion_name):
 
         return f"Potion '{potion_name}' berhasil digunakan. {effect_message}"
     except Exception as e:
-        print(f"Error in use_potion: {e}")
+        logging.error(f"Error in use_potion: {e}")
         return "Terjadi kesalahan saat menggunakan potion."
-
 
 async def trash_item(user_id, item_type, item_name):
     try:
