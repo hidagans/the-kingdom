@@ -22,7 +22,7 @@ async def inventory_command(client, callback_query):
     inventory_message, keyboard = await show_inventory(callback_query.from_user.id)
     await callback_query.edit_message_text(inventory_message, reply_markup=keyboard)
 
-@KING.CALL(r"inventory:(headarmor|bodyarmor|footarmor|weapons)(:\d+)?")
+@KING.CALL(r"inventory:(headarmor|bodyarmor|footarmor|weapons|potions)(:\d+)?")
 async def category_items_command(client, callback_query):
     data = callback_query.data.split(":")
     item_type = data[1]
