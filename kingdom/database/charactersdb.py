@@ -76,14 +76,6 @@ async def update_item_power(user_id, item_type, new_item_power):
     else:
         return False
 
-async def get_total_workers():
-    all_characters = characters.find({}, {"stats.Worker": 1})
-    total_worker = 0
-    async for character in all_characters:
-        total_worker += character['stats']['Worker']
-
-    return total_worker
-
 async def get_total_skill():
     all_characters = characters.find({}, {"stats.Skill": 1})
     total_skill = 0
