@@ -282,6 +282,7 @@ async def show_inventory(user_id):
         [InlineKeyboardButton("Body Armor", callback_data="inventory:bodyarmor")],
         [InlineKeyboardButton("Foot Armor", callback_data="inventory:footarmor")],
         [InlineKeyboardButton("Weapons", callback_data="inventory:weapons")],
+        [InlineKeyboardButton("Potions", callback_data="inventory:potions")],
         [InlineKeyboardButton("Back", callback_data="my_profile")]
     ])
     return "Pilih kategori item:", keyboard
@@ -511,7 +512,7 @@ async def get_user_inventory(user_id):
 
         if character:
             inventory = character.get("inventory", [])
-            inventory_data = {"headarmor": [], "bodyarmor": [], "footarmor": [], "weapons": []}
+            inventory_data = {"headarmor": [], "bodyarmor": [], "footarmor": [], "weapons": [], "potions"}
 
             for item in inventory:
                 item_type = item.get("armor_type", "weapons")
