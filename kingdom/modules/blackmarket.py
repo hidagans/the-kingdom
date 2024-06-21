@@ -44,7 +44,7 @@ async def get_blackmarket_items():
         print(f"Error in get_blackmarket_items: {e}")
         return []
 
-@bot.on_message(filters.command("blackmarket_items"))
+@bot.on_message(filters.command("blackmarket_items") & filters.user(ADMINS))
 async def blackmarket_items_command(client, message):
     try:
         item_list = await get_blackmarket_items()
@@ -52,7 +52,7 @@ async def blackmarket_items_command(client, message):
             for item in item_list:
                 item_name = item[0].text.split(' ')[1]  # Extract item name from button text
                 reply_markup = InlineKeyboardMarkup([item])
-                await message.reply_text(f"Item: {item_name}", reply_markup=reply_markup)
+                await bot.send_message(-1002074292027, f"Item: {item_name}", message_thread_id=32, reply_markup=reply_markup)
                 await asyncio.sleep(5)  # Tambahkan jeda 5 detik
         else:
             await message.reply_text("Tidak ada item yang tersedia di Black Market saat ini.")
