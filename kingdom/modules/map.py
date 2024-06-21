@@ -98,11 +98,11 @@ async def add_gathering_spot_command(client, message):
 
 @bot.on_message(filters.command("show_maps"))
 async def show_maps(client, message):
-    maps = await maps.find().to_list(length=None)
-    if not maps:
+    maps_data = await maps.find().to_list(length=None)
+    if not maps_data:
         await message.reply_text("No map locations found.")
         return
-    keyboard = create_map_list_inline_keyboard(maps)
+    keyboard = create_map_list_inline_keyboard(maps_data)
     await message.reply_text("Here are the map locations:", reply_markup=keyboard)
 
 @KING.CALL(r"^location_")
