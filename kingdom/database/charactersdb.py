@@ -6,6 +6,7 @@ import logging
 from pyrogram.types import *
 from config import XP_PER_LEVEL, XP_INCREMENT
 import logging
+import asyncio
 
 # Atur konfigurasi logging (opsional, bisa disesuaikan dengan kebutuhan)
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -355,6 +356,25 @@ async def use_item(user_id, item_type, item_name):
     except Exception as e:
         print(f"Error in use_item: {e}")
         return "Terjadi kesalahan saat mencoba menggunakan item."
+    
+async def regenerate_hp(user_id, regen_hp, duration, times):
+    for _ in range(times):
+        await asyncio.sleep(duration)
+        character = await characters.find_one({"user_id": user_id})
+        if not character:
+            logging.error("Karakter tidak ditemukan saat proses regenerasi.")
+            return
+
+        current_hp = character.get('stats', {}).get('current_hp', 0)
+        max_hp = character.get('stats', {}).get('max_hp', 0)
+        new_hp = min(current_hp + regen_hp, max_hp)
+
+        await characters.update_one(
+            {"user_id": user_id},
+            {"$set": {"stats.current_hp": new_hp}}
+        )
+
+        logging.debug(f"Regenerasi HP sebesar {regen_hp} untuk user_id: {user_id}. HP saat ini: {new_hp}")
 
 async def use_potion(user_id, potion_name):
     try:
@@ -387,19 +407,12 @@ async def use_potion(user_id, potion_name):
         if potion_to_use['item_type'] == "potions":
             regen_hp = potion_to_use.get('regen_hp', 0)
             duration = potion_to_use.get('duration', 0)
+            times = potion_to_use.get('times', 1)  # Berapa kali regen terjadi
 
-            # Regenerasi HP
-            current_hp = character.get('stats', {}).get('current_hp', 0)
-            max_hp = character.get('stats', {}).get('max_hp', 0)
-            new_hp = min(current_hp + regen_hp, max_hp)  # Pastikan tidak melebihi max_hp
+            # Mulai proses regenerasi HP
+            asyncio.create_task(regenerate_hp(user_id, regen_hp, duration, times))
 
-            # Update current_hp di database
-            await characters.update_one(
-                {"user_id": user_id},
-                {"$set": {"stats.current_hp": new_hp}}
-            )
-
-            effect_message = f"Regenerasi HP sebesar {regen_hp}. "
+            effect_message = f"Regenerasi HP sebesar {regen_hp} setiap {duration} detik untuk {times} kali. "
 
         return f"Potion '{potion_name}' berhasil digunakan. {effect_message}"
     except Exception as e:
