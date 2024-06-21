@@ -105,6 +105,15 @@ async def show_maps(client, message):
     keyboard = create_map_list_inline_keyboard(maps_data)
     await message.reply_text("Here are the map locations:", reply_markup=keyboard)
 
+@KING.CALL("maps")
+async def show_maps(client, message):
+    maps_data = await maps.find().to_list(length=None)
+    if not maps_data:
+        await message.reply_text("No map locations found.")
+        return
+    keyboard = create_map_list_inline_keyboard(maps_data)
+    await message.reply_text("Here are the map locations:", reply_markup=keyboard)
+
 @KING.CALL(r"^location_")
 async def on_location_callback(client, callback_query):
     location_id = int(callback_query.data.split("_")[1])
@@ -143,18 +152,6 @@ async def on_zone_callback(client, callback_query):
         )
     else:
         await callback_query.answer("Zone not found.", show_alert=True)
-
-
-# Handler to show the maps again when back is pressed
-@KING.CALL("show_maps")
-async def show_maps_callback(client, callback_query):
-    maps = await maps.find().to_list(length=None)
-    if not maps:
-        await callback_query.message.edit_text("No map locations found.")
-        return
-    
-    keyboard = create_map_list_inline_keyboard(maps)
-    await callback_query.message.edit_text("Here are the map locations:", reply_markup=keyboard)
 
 @KING.CMD("delete_maps", FILTERS.OWNER)
 async def delete_maps(client, message):
