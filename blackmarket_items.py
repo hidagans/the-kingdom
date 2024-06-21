@@ -1,6 +1,5 @@
 import pymongo
 import random
-from kingdom.database.__mongo import weapons, headarmors, bodyarmors, footarmors
 from datetime import datetime, timedelta
 from config import MONGO_URL
 
@@ -11,10 +10,10 @@ collection = db["blackmarket_items"]
 
 # Daftar jenis item yang ingin dimasukkan
 item_collections = {
-    "weapon": weapons,
-    "bodyarmor": bodyarmors,
-    "headarmor": headarmors,
-    "footarmor": footarmors
+    "weapon": db.weapons,
+    "bodyarmor": db.bodyarmors,
+    "headarmor": db.headarmors,
+    "footarmor": db.footarmors
 }
 
 tiers = range(2, 9)  # Tier dari 2 hingga 8
