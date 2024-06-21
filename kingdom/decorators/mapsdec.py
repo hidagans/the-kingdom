@@ -1,6 +1,6 @@
 from pyrogram.types import *
 import asyncio
-from kingdom.database import maps as map, material
+from kingdom.database import maps as map_collection, material
 from datetime import timedelta, datetime
 
 # Waktu respawn untuk setiap tier
@@ -23,10 +23,9 @@ def create_map_list_inline_keyboard(maps):
     keyboard.append([InlineKeyboardButton("BACK", callback_data="start")])
     return InlineKeyboardMarkup(keyboard)
 
-
 async def respawn_resources():
     while True:
-        maps = await map.find().to_list(length=None)
+        maps = await map_collection.find().to_list(length=None)  # Fetch the map data from the collection
         material_data = await material.find().to_list(length=None)
         quantity_items = {material['name']: material['quantity'] for material in material_data}
         
@@ -43,7 +42,7 @@ async def respawn_resources():
                         spot['quantity'] = min(spot['quantity'] + 1, max_quantity)
                         spot['last_gathered_time'] = datetime.now()
                         
-            await maps.update_one({"_id": map_data["_id"]}, {"$set": {"spots": map_data["spots"]}})
+            await map_collection.update_one({"_id": map_data["_id"]}, {"$set": {"spots": map_data["spots"]}})
         
         await asyncio.sleep(60)  # Check every minute
 
