@@ -1,4 +1,4 @@
-inifrom .__mongo import *
+from .__mongo import *
 import random
 import string
 from pyromod import listen
