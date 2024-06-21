@@ -107,8 +107,8 @@ async def show_maps(client, message):
 
 @KING.CALL("maps")
 async def mps(client, callback_query):
-    maps = await maps.find().to_list(length=None)
-    if not maps:
+    maps_data = await maps.find().to_list(length=None)
+    if not maps_data:
         await callback_query.reply_text("No map locations found.")
         return
     keyboard = create_map_list_inline_keyboard(maps)
