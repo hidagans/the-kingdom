@@ -96,7 +96,7 @@ async def add_gathering_spot_command(client, message):
     
     await message.reply_text(f"Spot pengumpulan untuk tipe '{resource_type}' berhasil ditambahkan di {map_data['name']}.")
 
-@KING.CMD("show_maps")
+@bot.on_message(filters.command("show_maps"))
 async def show_maps(client, message):
     maps = await maps.find().to_list(length=None)
     if not maps:
@@ -104,15 +104,6 @@ async def show_maps(client, message):
         return
     keyboard = create_map_list_inline_keyboard(maps)
     await message.reply_text("Here are the map locations:", reply_markup=keyboard)
-
-@KING.CALL("maps")
-async def mps(client, callback_query):
-    maps_data = await maps.find().to_list(length=None)
-    if not maps_data:
-        await callback_query.reply_text("No map locations found.")
-        return
-    keyboard = create_map_list_inline_keyboard(maps)
-    await callback_query.reply_text("Here are the map locations:", reply_markup=keyboard)
 
 @KING.CALL(r"^location_")
 async def on_location_callback(client, callback_query):
