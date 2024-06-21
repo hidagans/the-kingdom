@@ -40,5 +40,3 @@ async def add_item_to_inventory(name, type, user_id):
         print(f"{name} telah ditambahkan ke inventory user {user_id}.")
     else:
         print(f"Item {name} tidak ditemukan di database.")
-
-#hehehe
