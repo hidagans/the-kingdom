@@ -58,7 +58,6 @@ async def blackmarket_items_command(client, message):
         await message.reply_text("Terjadi kesalahan dalam memuat daftar item Black Market.")
 
 
-# Callback untuk menjual item
 @KING.CALL(r"^sell_item_")
 async def sell_item_callback(client, callback_query):
     try:
@@ -78,8 +77,13 @@ async def sell_item_callback(client, callback_query):
             await callback_query.answer(f"Anda tidak memiliki item '{item_name}' di inventory.")
             return
         
-        black_market = get_blackmarket_items(item_to_sell)
-        price = black_market[price]
+        # Mendapatkan harga dari item di blackmarket
+        black_market_item = await blackmarket_items.find_one({"name": item_name})
+        if not black_market_item:
+            await callback_query.answer("Item tidak ditemukan di black market.")
+            return
+        
+        price = black_market_item["price"]
         
         # Menghapus item dari inventory
         inventory.remove(item_to_sell)
@@ -90,14 +94,16 @@ async def sell_item_callback(client, callback_query):
             {"$set": {"inventory": inventory}}
         )
         
-        # Simpan atau lakukan operasi lain sesuai kebutuhan game Anda
-        # Misalnya, tambahkan gold ke karakter
-        current_gold = character.get("currency", "Silver", 0)
-        new_silver = current_gold + price
+        # Menambahkan silver ke karakter
+        current_silver = character.get("currency", {}).get("silver", 0)
+        new_silver = current_silver + price
         await characters.update_one(
             {"user_id": user_id},
-            {"$set": {"currency": {"silver": new_silver}}}
+            {"$set": {"currency.silver": new_silver}}
         )
+        
+        # Menambahkan item ke dalam reward dungeon
+        await add_item_to_black_market(item_to_sell)
         
         await callback_query.answer(f"Item '{item_name}' berhasil dijual seharga {price} Silver.")
     

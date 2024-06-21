@@ -1,5 +1,6 @@
 from .__mongo import *
 import random
+
 async def get_random_black_market_item():
     try:
         items = await black_market.find().to_list(length=None)
@@ -10,6 +11,13 @@ async def get_random_black_market_item():
     except Exception as e:
         print(f"Error in get_random_black_market_item: {e}")
         return None
+    
+async def add_item_to_black_market(item):
+    try:
+        await black_market.insert_one(item)
+    except Exception as e:
+        print(f"Error in add_item_to_black_market: {e}")
+
 
 async def add_item_to_dungeon_rewards():
     item = await get_random_black_market_item()
