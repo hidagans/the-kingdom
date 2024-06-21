@@ -407,12 +407,12 @@ async def use_potion(user_id, potion_name):
         if potion_to_use['item_type'] == "potions":
             regen_hp = potion_to_use.get('regen_hp', 0)
             duration = potion_to_use.get('duration', 0)
-            times = potion_to_use.get('times', 1)  # Berapa kali regen terjadi
+            times = duration  # Berapa kali regen terjadi
 
             # Mulai proses regenerasi HP
             asyncio.create_task(regenerate_hp(user_id, regen_hp, duration, times))
 
-            effect_message = f"Regenerasi HP sebesar {regen_hp} setiap {duration} detik untuk {times} kali. "
+            effect_message = f"Regenerasi HP sebesar {regen_hp} setiap {duration} detik. "
 
         return f"Potion '{potion_name}' berhasil digunakan. {effect_message}"
     except Exception as e:
