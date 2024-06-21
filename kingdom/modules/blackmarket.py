@@ -25,6 +25,7 @@ async def black_market(client, callback_query):
     
     await callback_query.edit_message_text("Black Market", reply_markup=black_market_markup)
 
+# Fungsi untuk mendapatkan daftar item dari Black Market
 async def get_blackmarket_items():
     try:
         cursor = blackmarket_items.find({})
@@ -48,8 +49,9 @@ async def blackmarket_items_command(client, message):
         item_list = await get_blackmarket_items()
         if item_list:
             for item in item_list:
-                reply_markup = InlineKeyboardMarkup(item)
-                await message.reply_text(f"Item: {item[0].text.split(' ')[1]}", reply_markup=reply_markup)
+                item_name = item[0].text.split(' ')[1]  # Extract item name from button text
+                reply_markup = InlineKeyboardMarkup([item])
+                await message.reply_text(f"Item: {item_name}", reply_markup=reply_markup)
         else:
             await message.reply_text("Tidak ada item yang tersedia di Black Market saat ini.")
     except Exception as e:
