@@ -105,7 +105,7 @@ async def show_maps(client, message):
     keyboard = create_map_list_inline_keyboard(maps)
     await message.reply_text("Here are the map locations:", reply_markup=keyboard)
 
-@KING.CALL(r"^maps")
+@KING.CALL("maps")
 async def mps(client, callback_query):
     maps = await maps.find().to_list(length=None)
     if not maps:

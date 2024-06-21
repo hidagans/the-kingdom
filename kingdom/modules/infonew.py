@@ -69,7 +69,7 @@ async def konten_menu(client, callback_query):
             InlineKeyboardButton("GATHERING", callback_data="cb_gathering_konten"),
         ],
         [
-            InlineKeyboardButton("MAPS", callback_data="^maps"),
+            InlineKeyboardButton("MAPS", callback_data="maps"),
             InlineKeyboardButton("BACK", callback_data="start")
         ],
     ]
