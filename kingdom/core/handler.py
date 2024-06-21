@@ -20,7 +20,7 @@ class KING:
 
         return wrapper
 
-    def INLINE(command):
+    def ALL(command):
         def wrapper(func):
             @bot.on_inline_query(filters.regex(command))
             async def wrapped_func(client, message):
