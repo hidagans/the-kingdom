@@ -1,4 +1,4 @@
-from .__mongo import *
+inifrom .__mongo import *
 import random
 import string
 from pyromod import listen
@@ -308,7 +308,7 @@ async def show_items(user_id, item_type, start=0, limit=1):
         for item in items[start:end]:
             item_buttons = []
             for action in ["use", "sell", "trash"]:
-                callback_data = f"{action}:{item_type}:{item['name']}"
+                callback_data = f"{action}:{item_type}:{item['_id']}"
                 item_buttons.append(InlineKeyboardButton(f"{action.capitalize()} {item['name']}", callback_data=callback_data))
             keyboard.append(item_buttons)
 
@@ -334,7 +334,7 @@ async def use_item(user_id, item_type, item_name):
                 "footarmor": None,
                 "weapon": None
             })
-            item_to_use = next((item for item in inventory if item['name'] == item_name), None)
+            item_to_use = next((item for item in inventory if item['_id'] == item_name), None)
 
             if item_to_use:
                 item_type = item_to_use.get("armor_type", "")
@@ -367,7 +367,7 @@ async def use_potion(user_id, potion_name):
 
         # Cari potion dalam inventory karakter
         inventory = character.get("inventory", [])
-        potion_to_use = next((item for item in inventory if item['name'].lower() == potion_name.lower() and item.get('item_type') == 'potions'), None)
+        potion_to_use = next((item for item in inventory if item['_id'].lower() == potion_name.lower() and item.get('item_type') == 'potions'), None)
 
         if not potion_to_use:
             logging.debug(f"Inventory karakter untuk user_id {user_id}: {inventory}")
