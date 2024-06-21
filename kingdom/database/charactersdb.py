@@ -389,14 +389,14 @@ async def use_potion(user_id, potion_name):
             duration = potion_to_use.get('duration', 0)
 
             # Regenerasi HP
-            current_hp = character.get('current_hp', 0)
-            max_hp = character.get('max_hp', 0)
+            current_hp = character.get('stats', 'current_hp', 0)
+            max_hp = character.get('stats','max_hp', 0)
             new_hp = min(current_hp + regen_hp, max_hp)  # Pastikan tidak melebihi max_hp
 
             # Update current_hp di database
             await characters.update_one(
                 {"user_id": user_id},
-                {"$set": {"current_hp": new_hp}}
+                {"$set": {"stats": {"current_hp": new_hp}}}
             )
 
             effect_message = f"Regenerasi HP sebesar {regen_hp}. "
