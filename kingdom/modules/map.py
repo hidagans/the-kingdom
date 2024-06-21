@@ -52,7 +52,6 @@ async def add_map(client, message):
                         "resource_tier": resource_tier,
                         "percentage": percentage,
                         "quantity": int(material_info['quantity'] * percentage),
-                        "required_tools": material_info['required_tools'],  # Menambahkan required_tools dari material info
                         "occupied_by": None  # Inisialisasi spot tidak ada yang menempati
                     }
                     await maps_resource.insert_one(resource_spot)
