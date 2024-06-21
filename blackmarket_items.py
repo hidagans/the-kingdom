@@ -10,7 +10,7 @@ collection = db["blackmarket_items"]
 
 # Daftar jenis item yang ingin dimasukkan
 item_collections = {
-    "weapon": db.weapons,
+    "weapons": db.weapons,
     "bodyarmor": db.bodyarmors,
     "headarmor": db.headarmors,
     "footarmor": db.footarmors
