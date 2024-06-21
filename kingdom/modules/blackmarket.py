@@ -3,6 +3,7 @@ from kingdom.database import *
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import random
+import asyncio
 
 @KING.CALL("black_market")
 async def black_market(client, callback_query):
@@ -52,12 +53,12 @@ async def blackmarket_items_command(client, message):
                 item_name = item[0].text.split(' ')[1]  # Extract item name from button text
                 reply_markup = InlineKeyboardMarkup([item])
                 await message.reply_text(f"Item: {item_name}", reply_markup=reply_markup)
+                await asyncio.sleep(5)  # Tambahkan jeda 5 detik
         else:
             await message.reply_text("Tidak ada item yang tersedia di Black Market saat ini.")
     except Exception as e:
         print(f"Error: {e}")
         await message.reply_text("Terjadi kesalahan dalam memuat daftar item Black Market.")
-
 
 @KING.CALL(r"^sell_item_")
 async def sell_item_callback(client, callback_query):
