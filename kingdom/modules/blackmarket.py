@@ -62,10 +62,8 @@ async def blackmarket_items_command(client, message):
 @KING.CALL(r"^sell_item_")
 async def sell_item_callback(client, callback_query):
     try:
-        item_name = callback_query.data.split("_", 2)[2]  # Ambil nama item dari callback_data
+        item_name = callback_query.data.split("_", 2)[2]
         user_id = callback_query.from_user.id
-        
-        # Ambil data karakter dan inventory
         character = await characters.find_one({"user_id": user_id})
         if not character:
             await callback_query.answer("Karakter tidak ditemukan.")
@@ -78,34 +76,25 @@ async def sell_item_callback(client, callback_query):
             await callback_query.answer(f"Anda tidak memiliki item '{item_name}' di inventory.")
             return
         
-        # Mendapatkan harga dari item di blackmarket
         black_market_item = await blackmarket_items.find_one({"name": item_name})
         if not black_market_item:
             await callback_query.answer("Item tidak ditemukan di black market.")
             return
         
         price = black_market_item["price"]
-        
-        # Menghapus item dari inventory
         inventory.remove(item_to_sell)
-        
-        # Update inventory karakter di database
         await characters.update_one(
             {"user_id": user_id},
             {"$set": {"inventory": inventory}}
         )
-        
-        # Menambahkan silver ke karakter
         current_silver = character.get("currency", {}).get("Silver", 0)
         new_silver = current_silver + price
         await characters.update_one(
             {"user_id": user_id},
-            {"$set": {"currency.silver": new_silver}}
+            {"$set": {"currency.Silver": new_silver}}
         )
-        
-        # Menambahkan item ke dalam reward dungeon
         await add_item_to_black_market(item_to_sell)
-        
+        await client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.message_id])
         await callback_query.answer(f"Item '{item_name}' berhasil dijual seharga {price} Silver.")
     
     except Exception as e:
