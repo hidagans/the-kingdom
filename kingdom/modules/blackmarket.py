@@ -96,7 +96,7 @@ async def sell_item_callback(client, callback_query):
             {"$set": {"currency.Silver": new_silver}}
         )
         await add_item_to_black_market(item_to_sell)
-        await client.delete_messages(chat_id=callback_query.message.chat.id, message_ids=[callback_query.message.message_id])
+        await client.delete_messages(chat_id=callback_query.chat.id, message_ids=[callback_query.message_id])
         await callback_query.answer(f"Item '{item_name}' berhasil dijual seharga {price} Silver.")
     
     except Exception as e:
