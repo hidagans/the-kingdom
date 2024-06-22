@@ -72,7 +72,7 @@ async def sell_item_callback(client, callback_query):
             await callback_query.answer("Karakter tidak ditemukan.")
             return
         
-        inventory = character.get("inventory", [])
+        inventory = characters.get("inventory", [])
         item_to_sell = next((item for item in inventory if item['name'].lower() == item_name.lower()), None)
         
         if not item_to_sell:
@@ -97,7 +97,7 @@ async def sell_item_callback(client, callback_query):
         )
         
         # Menambahkan silver ke karakter
-        current_silver = character.get("currency", {}).get("silver", 0)
+        current_silver = character.get("currency", {}).get("Silver", 0)
         new_silver = current_silver + price
         await characters.update_one(
             {"user_id": user_id},
