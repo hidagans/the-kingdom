@@ -50,9 +50,8 @@ async def blackmarket_items_command(client, message):
         item_list = await get_blackmarket_items()
         if item_list:
             for item in item_list:
-                item_name = item[0].text.split(' ')[1]  # Extract item name from button text
                 reply_markup = InlineKeyboardMarkup([item])
-                await bot.send_message(-1002074292027, f"Item: {item_name}", message_thread_id=32, reply_markup=reply_markup)
+                await bot.send_message(-1002074292027, f"Item: {item}", message_thread_id=32, reply_markup=reply_markup)
                 await asyncio.sleep(5)  # Tambahkan jeda 5 detik
         else:
             await message.reply_text("Tidak ada item yang tersedia di Black Market saat ini.")
