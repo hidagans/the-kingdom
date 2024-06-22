@@ -26,7 +26,7 @@ def generate_price(tier):
 for item_type, item_collection in item_collections.items():
     for item in item_collection.find():
         for tier in tiers:
-            item_name = f"{item_type.capitalize()} {item['name']}"
+            item_name = f"{item['name']}"
             price = generate_price(tier)
             update_time = datetime.utcnow() - timedelta(days=(tier - 1))  # Update harga semakin lama seiring naiknya tier
 
