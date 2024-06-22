@@ -72,7 +72,7 @@ async def sell_item_callback(client, callback_query):
             await callback_query.answer("Karakter tidak ditemukan.")
             return
         
-        inventory = characters.get("inventory", [])
+        inventory = character.get("inventory", [])
         item_to_sell = next((item for item in inventory if item['name'].lower() == item_name.lower()), None)
         
         if not item_to_sell:
