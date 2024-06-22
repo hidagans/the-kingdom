@@ -99,7 +99,7 @@ async def sell_item_callback(client, callback_query):
         new_item["_id"] = ObjectId()
         await blackmarket_items.insert_one(new_item)
         await callback_query.message.delete()
-        await callback_query.answer(f"Item '{item_name}' berhasil dijual seharga {price} Silver.")
+        await client.send_message(user_id, f"Item '{item_name}' berhasil dijual seharga {price} Silver.")
     
     except Exception as e:
         print(f"Error: {e}")
