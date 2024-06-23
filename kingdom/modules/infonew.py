@@ -103,7 +103,7 @@ async def unequip_command(client, message):
     # Membalas pesan dengan hasil unequip item
     await message.reply_text(response_message)
 
-@KING.CMD("trade_item")
+@bot.on_message(filters.command("trade_item"))
 async def trade_item(client, message):
     try:
         # Parsing pesan perintah untuk mendapatkan detail perdagangan
