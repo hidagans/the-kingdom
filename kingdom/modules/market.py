@@ -7,4 +7,5 @@ async def buy_item_callback(client, callback_query: CallbackQuery):
     item_id = callback_query.data.split("_")[1]
     user_id = callback_query.from_user.id
     result = await buy_item(user_id, ObjectId(item_id))
+    await callback_query.message.delete()
     await callback_query.answer(result, show_alert=True)
