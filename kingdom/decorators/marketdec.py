@@ -81,12 +81,24 @@ async def buy_item(user_id, item_id):
             character = await characters.find_one({"user_id": user_id})
             if character:
                 price = item_in_market['price']
-                if character.get('currency', {}).get('Silver', 0) >= price:
-                    character['currency']['Silver'] -= price
-                    character['inventory'].append(item_in_market['item'])
+                currency = character.get('currency', {})
+                silver = currency.get('Silver', 0)
+
+                # Cek dan buat inventory jika tidak ada
+                if 'inventory' not in character:
+                    character['inventory'] = []
+
+                inventory = character['inventory']
+                
+                if silver >= price:
+                    # Kurangi jumlah Silver
+                    currency['Silver'] = silver - price
+                    # Tambahkan item ke inventory
+                    inventory.append(item_in_market['item'])
+                    
                     await characters.update_one(
                         {"user_id": user_id},
-                        {"$set": {"inventory": character['inventory'], "currency.Silver": character['currency']['Silver']}}
+                        {"$set": {"inventory": inventory, "currency.Silver": currency['Silver']}}
                     )
                     await market.delete_one({"_id": item_id})
 
