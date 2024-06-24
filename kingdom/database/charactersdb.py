@@ -622,7 +622,7 @@ async def get_item(collection, item_id):
 
 async def calculate_total_stats(user_id):
     try:
-        character = await characters.find_one({"user_id": user_id})  # Menunggu hasil dari coroutine find_one
+        character = await characters.find_one({"user_id": user_id})
         if character:
             equip = character.get("equipment", {
                 "headarmor": None,
@@ -633,27 +633,32 @@ async def calculate_total_stats(user_id):
 
             max_hp_values = []
 
-            for key, equipment in character['equipment'].items():
+            for key, equipment in equip.items():
                 if equipment and 'max_hp' in equipment:
                     max_hp_values.append(equipment['max_hp'])
-                    
 
+            # Awal total stats dengan nilai dasar dari karakter
             total_stats = {
-                'current_hp': character.get('stats', {}).get('current_hp', {}),
-                'max_hp': character['stats']['characters_hp'] + sum(max_hp_values),
+                'current_hp': character.get('stats', {}).get('current_hp', 0),
+                'max_hp': character.get('stats', {}).get('characters_hp', 0) + sum(max_hp_values),
                 'Exp': character.get('stats', {}).get('Exp', 0),
                 'Skill Points': character.get('stats', {}).get('Skill Points', 0),
                 'characters_hp': character.get('stats', {}).get('characters_hp', 0),
-                'damage': character.get('stats', {}).get('damage', 0)
+                'damage': character.get('stats', {}).get('damage', 0),
+                'defense': character.get('stats', {}).get('defense', 0),
+                'magic_attack': character.get('stats', {}).get('magic_attack', 0),
+                'attack_speed': character.get('stats', {}).get('attack_speed', 0),
+                'max_mana': character.get('stats', {}).get('max_mana', 0),
+                'damage_increase': character.get('stats', {}).get('damage_increase', 0)
             }
-           
-            # Jumlahkan statistik dari setiap item
+
+            # Jumlahkan statistik dari setiap item peralatan
             for item in equip.values():
                 if item:
                     for stat, value in item.items():
                         if stat not in ["_id", "type", "name", "Level", "armor_type"]:
-                            if stat == 'max_hp':  # Tambahkan max_hp_values ke max_hp
-                                total_stats[stat] = character['stats']['characters_hp'] + sum(max_hp_values)
+                            if stat in total_stats:
+                                total_stats[stat] += value
                             else:
                                 total_stats[stat] = value
 
