@@ -643,7 +643,8 @@ async def calculate_total_stats(user_id):
                 'max_hp': character['stats']['characters_hp'] + sum(max_hp_values),
                 'Exp': character.get('stats', {}).get('Exp', 0),
                 'Skill Points': character.get('stats', {}).get('Skill Points', 0),
-                'characters_hp': character.get('stats', {}).get('characters_hp', 0)
+                'characters_hp': character.get('stats', {}).get('characters_hp', 0),
+                'damage': character.get('stats', {}).get('damage', 0)
             }
            
             # Jumlahkan statistik dari setiap item
