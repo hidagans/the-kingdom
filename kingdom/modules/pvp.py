@@ -6,7 +6,7 @@ from kingdom.core import *
 from kingdom.database import *
 from kingdom.decorators import *
 
-@KING.CMD("pvp")
+@bot.on_message(filters.command("pvp"))
 async def pvp_command(client: Client, message: Message):
     args = message.text.split()
     if len(args) < 2:
@@ -30,7 +30,7 @@ async def pvp_command(client: Client, message: Message):
         await message.reply_text("Pengguna target tidak ditemukan.")
 
 
-@KING.CMD("check_pvp")
+@bot.on_message(filters.command("check_pvp"))
 async def check_pvp_command(client: Client, message: Message):
     user_id = message.from_user.id
     status_message = await check_pvp_status(user_id)
