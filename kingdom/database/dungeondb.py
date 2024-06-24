@@ -15,13 +15,25 @@ chests = [
     {"name": "Gold Chest" ,"tier": "Gold", "type": "chest", "silver_reward": 5000, "exp_reward": 200, "skill_point_reward": 0.25, "probability": 0.05},
 ]
 
+import numpy as np
+
 async def get_random_item_from_black_market():
-    items = []
-    async for document in black_market.find({}):
-        items.append(document)
-    probabilities = [0.5 if item['Level'] == '1' else 0.3 if item['Level'] == '2' else 0.15 if item['Level'] == '3' else 0.05 for item in items]
+    items = await black_market.find().to_list(length=None)
+    
+    if not items:
+        raise ValueError("No items found in the black market")
+
+    # Assign probabilities (example: all items have equal probability)
+    probabilities = [1/len(items)] * len(items)
+    
+    # Ensure probabilities sum to 1
+    total_probability = sum(probabilities)
+    if total_probability != 1:
+        probabilities = [p / total_probability for p in probabilities]
+
     chosen_item = np.random.choice(items, p=probabilities)
     return chosen_item
+
 
 async def get_random_monster(tier):
     monsters = {
