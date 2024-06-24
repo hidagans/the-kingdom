@@ -412,7 +412,7 @@ async def attack(client, callback_query):
         max_length = 1024
         for i in range(0, len(reply_text), max_length):
             part = reply_text[i:i+max_length]
-            await callback_query.edit_message_text(part)
+            await bot.send_message(user_id ,part)
     else:
         await callback_query.edit_message_text("Kamu tidak memiliki cukup HP untuk memulai dungeon")
 
