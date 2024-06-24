@@ -15,6 +15,14 @@ chests = [
     {"name": "Gold Chest" ,"tier": "Gold", "type": "chest", "silver_reward": 5000, "exp_reward": 200, "skill_point_reward": 0.25, "probability": 0.05},
 ]
 
+async def get_random_item_from_black_market():
+    items = []
+    async for document in black_market.find({}):
+        items.append(document)
+    probabilities = [0.5 if item['Level'] == '1' else 0.3 if item['Level'] == '2' else 0.15 if item['Level'] == '3' else 0.05 for item in items]
+    chosen_item = np.random.choice(items, p=probabilities)
+    return chosen_item
+
 async def get_random_monster(tier):
     monsters = {
         3: [
@@ -147,18 +155,18 @@ def get_random_chest():
     chosen_chest = next(chest for chest in chests if chest['name'] == chosen_chest_type)
     return chosen_chest
 
-async def add_chest_to_inventory(user_id, chest_type):
+async def add_chest_to_inventory(user_id, chest):
     try:
         character = await characters.find_one({"user_id": user_id})
         if character:
             chests = character.get("chests", [])
-            chests.append(chest_type)
+            chests.append(chest)
             await characters.update_one(
                 {"user_id": user_id},
                 {"$set": {"chests": chests}}
             )
         else:
-            await characters.insert_one({"user_id": user_id, "chests": [chest_type]})
+            await characters.insert_one({"user_id": user_id, "chests": [chest]})
     except Exception as e:
         print(f"Error adding chest to inventory: {e}")
 
@@ -214,20 +222,26 @@ async def complete_dungeon(user_id):
 
 async def give_dungeon_rewards(user_id):
     random_chest = get_random_chest()
-    
+    random_item = await get_random_item_from_black_market()
+    chest_data = {
+        "name": random_chest['name'],
+        "item": random_item,
+        "silver_reward": random_chest['silver_reward'],
+        "exp_reward": random_chest['exp_reward'],
+        "skill_point_reward": random_chest['skill_point_reward']
+    }
+
     message_text = f"Selamat! Anda telah menyelesaikan dungeon!\n"
-    message_text += f"Anda mendapatkan chest: {random_chest['type']}\n"
+    message_text += f"Anda mendapatkan chest: {random_chest['name']}\n"
+    message_text += f"Item dalam chest: {random_item['name']}\n"
 
-    # Simpan chest ke inventaris pemain
-    await add_chest_to_inventory(user_id, random_chest['type'])
+    # Simpan chest ke inventory
+    await add_chest_to_inventory(user_id, chest_data)
 
-    # Tambahkan tombol untuk membuka chest
-    buttons = [
-        [InlineKeyboardButton("Buka Chest", url="https://t.me/tkgame_bot/kingdom")]
-    ]
+    buttons = [[InlineKeyboardButton("Buka Chest", url="https://t.me/tkgame_bot/kingdom")]]
     max_length = 1024
     for i in range(0, len(message_text), max_length):
-        part = message_text[i:i+max_length]
+        part = message_text[i:i + max_length]
         await bot.send_message(user_id, part, reply_markup=InlineKeyboardMarkup(buttons))
 
 async def damage_log_dungeon(user_id):
