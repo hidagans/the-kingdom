@@ -9,10 +9,10 @@ from kingdom.decorators import *
 import numpy as np
 
 chests = [
-    {"type": "Green", "silver_reward": 1000, "exp_reward": 50, "skill_point_reward": 0.1, "probability": 0.5},
-    {"type": "Blue", "silver_reward": 2000, "exp_reward": 100, "skill_point_reward": 0.15, "probability": 0.3},
-    {"type": "Purple", "silver_reward": 3000, "exp_reward": 150, "skill_point_reward": 0.2, "probability": 0.15},
-    {"type": "Gold", "silver_reward": 5000, "exp_reward": 200, "skill_point_reward": 0.25, "probability": 0.05},
+    {"name": "Green Chest", "tier": "Green", "type": "chest", "silver_reward": 1000, "exp_reward": 50, "skill_point_reward": 0.1, "probability": 0.5},
+    {"name": "Blue Chest", "tier": "Blue", "type": "chest", "silver_reward": 2000, "exp_reward": 100, "skill_point_reward": 0.15, "probability": 0.3},
+    {"name": "Purple Chest", "tier": "Purple", "type": "chest", "silver_reward": 3000, "exp_reward": 150, "skill_point_reward": 0.2, "probability": 0.15},
+    {"name": "Gold Chest" ,"tier": "Gold", "type": "chest", "silver_reward": 5000, "exp_reward": 200, "skill_point_reward": 0.25, "probability": 0.05},
 ]
 
 async def get_random_monster(tier):
@@ -141,10 +141,10 @@ async def get_random_monster(tier):
     return random.choice(monsters[tier])
 
 def get_random_chest():
-    chest_types = [chest['type'] for chest in chests]
+    chest_types = [chest['name'] for chest in chests]
     probabilities = [chest['probability'] for chest in chests]
     chosen_chest_type = np.random.choice(chest_types, p=probabilities)
-    chosen_chest = next(chest for chest in chests if chest['type'] == chosen_chest_type)
+    chosen_chest = next(chest for chest in chests if chest['name'] == chosen_chest_type)
     return chosen_chest
 
 async def add_chest_to_inventory(user_id, chest_type):
@@ -400,17 +400,19 @@ async def attack(client, callback_query):
         combat_result, combat_log = await handle_combat(player_stats, monster)
 
         combat_log_text = "\n".join(combat_log)
+        reply_text = ""
+
         if combat_result:
             await set_complete_dungeon(user_id)
             reply_text = f"Anda telah menyelesaikan Dungeon Tier {tier}\n\n{combat_log_text}"
         else:
             reply_text = f"Anda kalah dalam Dungeon Tier {tier}\n\n{combat_log_text}"
 
-    # Split the reply_text into multiple messages if it exceeds the limit
-            max_length = 1024
-            for i in range(0, len(reply_text), max_length):
-                part = reply_text[i:i+max_length]
-                await callback_query.edit_message_text(part)
+        # Split the reply_text into multiple messages if it exceeds the limit
+        max_length = 1024
+        for i in range(0, len(reply_text), max_length):
+            part = reply_text[i:i+max_length]
+            await callback_query.edit_message_text(part)
     else:
         await callback_query.edit_message_text("Kamu tidak memiliki cukup HP untuk memulai dungeon")
 
