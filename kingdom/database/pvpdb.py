@@ -4,6 +4,9 @@ from datetime import timedelta, datetime
 from pyrogram.types import *
 import logging
 
+# Part options
+PARTS = ["head", "body", "arms", "legs"]
+
 async def check_pvp_status(user_id: int):
     pvp_data = await pvp_matches.find_one({"user_id": user_id, "status": "ongoing"})
     
@@ -24,12 +27,14 @@ async def complete_pvp(pvp_data):
     user = await characters.find_one({"user_id": user_id})
     opponent = await characters.find_one({"user_id": opponent_id})
 
-    user_power = 0
-    opponent_power = 0
-    for power_us in user['stats'].values():
-        user_power += power_us
-    for power_op in opponent['stats'].values():
-        opponent_power += power_op
+    # Power calculation based on selected attack and defense parts
+    user_attack = pvp_data["user_attack"]
+    user_defense = pvp_data["user_defense"]
+    opponent_attack = pvp_data["opponent_attack"]
+    opponent_defense = pvp_data["opponent_defense"]
+
+    user_power = user['stats'][user_attack] - opponent['stats'][opponent_defense]
+    opponent_power = opponent['stats'][opponent_attack] - user['stats'][user_defense]
 
     if user_power > opponent_power:
         winner_id, loser_id = user_id, opponent_id
@@ -44,30 +49,25 @@ async def complete_pvp(pvp_data):
     winner = await characters.find_one({"user_id": winner_id})
     loser = await characters.find_one({"user_id": loser_id})
 
-
     loser_equipment = loser['equipment']
     winner_inventory = winner.get('inventory', [])
 
     for slot in ['weapons', 'headarmor', 'bodyarmor', 'footarmor']:
         item = loser_equipment.get(slot)
         if item:
-            item_quantity = item.get('quantity', 1)
-            if 'quantity' in item:
-                winner_inventory.append(item)
-                await characters.update_one(
-                    {"user_id": loser_id}, 
-                    {"$set": {f"equipment.{slot}": None}}
-                )
+            winner_inventory.append(item)
+            await characters.update_one(
+                {"user_id": loser_id}, 
+                {"$set": {f"equipment.{slot}": None}}
+            )
 
     loser_inventory = loser.get('inventory', [])
-    
     winner_inventory_dict = {item['_id']: item for item in winner_inventory}
 
     for item in loser_inventory:
         item_id = item['_id']
         if item_id in winner_inventory_dict:
-            if 'quantity' in item:
-                winner_inventory_dict[item_id]['quantity'] += item.get('quantity', 1)
+            winner_inventory_dict[item_id]['quantity'] += item.get('quantity', 1)
         else:
             winner_inventory_dict[item_id] = item
 
@@ -94,96 +94,6 @@ async def is_in_pvp(user_id: int) -> bool:
     pvp_data = await pvp_matches.find_one({"user_id": user_id, "status": "ongoing"})
     return pvp_data is not None
 
-async def start_duel(user_id: int, opponent_id: int, bet_amount: int, message: Message):
-    if user_id == opponent_id:
-        await message.reply_text("Anda tidak bisa menantang diri sendiri.")
-        return
-
-    user = await characters.find_one({"user_id": user_id})
-    opponent = await characters.find_one({"user_id": opponent_id})
-
-    if user['stats'].get('Gold', 0) < bet_amount:
-        await message.reply_text("Anda tidak memiliki cukup gold untuk bertaruh.")
-        return
-    if opponent['stats'].get('Gold', 0) < bet_amount:
-        await message.reply_text("Pengguna target tidak memiliki cukup gold untuk bertaruh.")
-        return
-
-    current_time = datetime.utcnow()
-    completion_time = current_time + timedelta(minutes=5)
-    
-    duel_data = {
-        "user_id": user_id,
-        "opponent_id": opponent_id,
-        "bet_amount": bet_amount,
-        "start_time": current_time,
-        "completion_time": completion_time,
-        "status": "ongoing"
-    }
-    await duel_matches.insert_one(duel_data)
-
-    reply_text = (
-        f"Duel dimulai! Lawan Anda adalah pengguna dengan ID {opponent_id} dengan taruhan {bet_amount} Gold.\n"
-        f"Estimasi waktu selesai: {completion_time.strftime('%H:%M')} UTC"
-    )
-    await message.reply_text(reply_text)
-
-async def check_duel_status(user_id: int):
-    duel_data = await duel_matches.find_one({"user_id": user_id, "status": "ongoing"})
-    
-    if duel_data:
-        current_time = datetime.utcnow()
-        if current_time > duel_data["completion_time"]:
-            result_message = await complete_duel(duel_data)
-            return result_message
-        else:
-            return f"Duel masih berlangsung. Estimasi waktu selesai: {duel_data['completion_time'].strftime('%H:%M')} UTC"
-    else:
-        return "Anda tidak memiliki duel yang sedang berlangsung."
-
-async def complete_duel(duel_data):
-    user_id = duel_data["user_id"]
-    opponent_id = duel_data["opponent_id"]
-    bet_amount = duel_data["bet_amount"]
-
-    user = await characters.find_one({"user_id": user_id})
-    opponent = await characters.find_one({"user_id": opponent_id})
-
-    if not user or not opponent:
-        logging.error(f"User or opponent not found. User ID: {user_id}, Opponent ID: {opponent_id}")
-        return "Duel gagal: Pengguna atau lawan tidak ditemukan."
-
-    user_power = sum(user['stats'].values())
-    opponent_power = sum(opponent['stats'].values())
-
-    if user_power > opponent_power:
-        winner_id, loser_id = user_id, opponent_id
-    elif opponent_power > user_power:
-        winner_id, loser_id = opponent_id, user_id
-    else:
-        winner_id, loser_id = random.choice([(user_id, opponent_id), (opponent_id, user_id)])
-
-    await characters.update_one({"user_id": winner_id}, {"$inc": {"stats.Gold": bet_amount}})
-    await characters.update_one({"user_id": loser_id}, {"$inc": {"stats.Gold": -bet_amount}})
-
-    await duel_matches.update_one({"_id": duel_data["_id"]}, {"$set": {"status": "completed", "winner_id": winner_id}})
-    
-    duel_data["completion_time"] = datetime.utcnow()
-    duel_data["winner_id"] = winner_id
-    await duel_history.insert_one(duel_data)
-    
-    result_message = (
-        f"Duel selesai!\n"
-        f"Pemenang: Pengguna dengan ID {winner_id} (Mendapatkan {bet_amount} Gold)\n"
-        f"Lawan: Pengguna dengan ID {loser_id} (Kehilangan {bet_amount} Gold)\n"
-    )
-
-    return result_message
-
-async def is_in_duel(user_id: int) -> bool:
-    duel_data = await duel_matches.find_one({"user_id": user_id, "status": "ongoing"})
-    return duel_data is not None
-
 async def start_pvp(user_id: int, opponent_id: int, message):
     if user_id == opponent_id:
         await message.reply_text("Anda tidak bisa menyerang diri sendiri.")
@@ -202,12 +112,60 @@ async def start_pvp(user_id: int, opponent_id: int, message):
         "opponent_id": opponent_id,
         "start_time": current_time,
         "completion_time": completion_time,
-        "status": "ongoing"
+        "status": "awaiting_actions",
+        "user_attack": None,
+        "user_defense": None,
+        "opponent_attack": None,
+        "opponent_defense": None
     }
     await pvp_matches.insert_one(pvp_data)
 
     reply_text = (
         f"Pertempuran PVP dimulai! Lawan Anda adalah pengguna dengan ID {opponent_id}.\n"
+        f"Silakan pilih bagian tubuh yang ingin Anda serang dan pertahankan.\n"
+        f"Gunakan perintah /choose_attack <part> dan /choose_defense <part> untuk memilih bagian.\n"
         f"Estimasi waktu selesai: {completion_time.strftime('%H:%M')} UTC"
     )
     await message.reply_text(reply_text)
+
+async def choose_attack(user_id: int, part: str, message: Message):
+    if part not in PARTS:
+        await message.reply_text("Bagian tubuh tidak valid. Gunakan: head, body, arms, legs.")
+        return
+
+    pvp_data = await pvp_matches.find_one({"user_id": user_id, "status": "awaiting_actions"})
+    if not pvp_data:
+        await message.reply_text("Anda tidak dalam pertempuran PVP atau pertempuran sudah dimulai.")
+        return
+
+    await pvp_matches.update_one({"_id": pvp_data["_id"]}, {"$set": {"user_attack": part}})
+    await message.reply_text(f"Serangan dipilih: {part}")
+
+    opponent_id = pvp_data["opponent_id"]
+    opponent_data = await pvp_matches.find_one({"user_id": opponent_id, "status": "awaiting_actions"})
+    if opponent_data and opponent_data["opponent_attack"] and opponent_data["opponent_defense"]:
+        await start_battle(pvp_data)
+
+async def choose_defense(user_id: int, part: str, message: Message):
+    if part not in PARTS:
+        await message.reply_text("Bagian tubuh tidak valid. Gunakan: head, body, arms, legs.")
+        return
+
+    pvp_data = await pvp_matches.find_one({"user_id": user_id, "status": "awaiting_actions"})
+    if not pvp_data:
+        await message.reply_text("Anda tidak dalam pertempuran PVP atau pertempuran sudah dimulai.")
+        return
+
+    await pvp_matches.update_one({"_id": pvp_data["_id"]}, {"$set": {"user_defense": part}})
+    await message.reply_text(f"Pertahanan dipilih: {part}")
+
+    opponent_id = pvp_data["opponent_id"]
+    opponent_data = await pvp_matches.find_one({"user_id": opponent_id, "status": "awaiting_actions"})
+    if opponent_data and opponent_data["opponent_attack"] and opponent_data["opponent_defense"]:
+        await start_battle(pvp_data)
+
+async def start_battle(pvp_data):
+    await pvp_matches.update_one({"_id": pvp_data["_id"]}, {"$set": {"status": "ongoing"}})
+    result_message = await complete_pvp(pvp_data)
+    await pvp_matches.update_one({"_id": pvp_data["_id"]}, {"$set": {"completion_time": datetime.utcnow()}})
+    return result_message

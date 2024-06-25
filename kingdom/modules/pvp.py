@@ -29,40 +29,30 @@ async def pvp_command(client: Client, message: Message):
     else:
         await message.reply_text("Pengguna target tidak ditemukan.")
 
-
 @bot.on_message(filters.command("check_pvp"))
 async def check_pvp_command(client: Client, message: Message):
     user_id = message.from_user.id
     status_message = await check_pvp_status(user_id)
     await message.reply_text(status_message)
 
-@KING.CMD("duel")
-async def duel_command(client: Client, message: Message):
+@bot.on_message(filters.command("choose_attack"))
+async def choose_attack_command(client: Client, message: Message):
     args = message.text.split()
-    if len(args) < 3:
-        await message.reply_text("Gunakan: /duel <user_id_target> <gold_amount>")
+    if len(args) < 2:
+        await message.reply_text("Gunakan: /choose_attack <bagian_tubuh>")
         return
 
-    try:
-        target_user = args[1]
-        bet_amount = int(args[2])
-        user = await client.get_users(target_user)
-        target_user_id = user.id
-    except ValueError:
-        await message.reply_text("ID pengguna atau jumlah gold tidak valid.")
-        return
-
+    part = args[1]
     user_id = message.from_user.id
-    target_user = await characters.find_one({"user_id": target_user_id})
+    await choose_attack(user_id, part, message)
 
-    if not target_user:
-        await message.reply_text("Pengguna target tidak ditemukan.")
+@bot.on_message(filters.command("choose_defense"))
+async def choose_defense_command(client: Client, message: Message):
+    args = message.text.split()
+    if len(args) < 2:
+        await message.reply_text("Gunakan: /choose_defense <bagian_tubuh>")
         return
 
-    await start_duel(user_id, target_user_id, bet_amount, message)
-
-@KING.CMD("check_duel")
-async def check_duel_command(client: Client, message: Message):
+    part = args[1]
     user_id = message.from_user.id
-    status_message = await check_duel_status(user_id)
-    await message.reply_text(status_message)
+    await choose_defense(user_id, part, message)
