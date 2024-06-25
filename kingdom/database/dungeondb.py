@@ -236,6 +236,7 @@ async def give_dungeon_rewards(user_id):
     random_chest = get_random_chest()
     random_item = await get_random_item_from_black_market()
     chest_data = {
+        "_id": ObjectId(),
         "name": random_chest['name'],
         "item": random_item,
         "silver_reward": random_chest['silver_reward'],
