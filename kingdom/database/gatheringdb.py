@@ -3,8 +3,8 @@ from datetime import timedelta
 
 # Fungsi untuk mengecek apakah user sedang dalam proses gathering
 async def is_gathering(user_id):
-    gathering = await gathering.find_one({"user_id": user_id})
-    return gathering is not None
+    is_gathering = await gathering.find_one({"user_id": user_id})
+    return is_gathering is not None
 
 # Fungsi untuk memulai proses gathering
 async def start_gathering(user_id, end_time, resource, quantity):
@@ -17,8 +17,8 @@ async def start_gathering(user_id, end_time, resource, quantity):
 
 # Fungsi untuk menyelesaikan proses gathering dan memperbarui inventory
 async def complete_gathering(user_id):
-    gathering = await gathering.find_one({"user_id": user_id})
-    if gathering:
+    is_gathering = await gathering.find_one({"user_id": user_id})
+    if is_gathering:
         resource = gathering["resource"]
         quantity = gathering["quantity"]
         await gathering.delete_one({"user_id": user_id})
