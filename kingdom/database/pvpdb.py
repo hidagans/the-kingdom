@@ -28,17 +28,28 @@ async def complete_pvp(pvp_data):
     opponent = await characters.find_one({"user_id": opponent_id})
 
     # Power calculation based on selected attack and defense parts
-    user_attack = pvp_data["user_attack"]
-    user_defense = pvp_data["user_defense"]
-    opponent_attack = pvp_data["opponent_attack"]
-    opponent_defense = pvp_data["opponent_defense"]
+    user_attack_part = pvp_data["user_attack"]
+    user_defense_part = pvp_data["user_defense"]
+    opponent_attack_part = pvp_data["opponent_attack"]
+    opponent_defense_part = pvp_data["opponent_defense"]
 
-    user_power = user['stats'][user_attack] - opponent['stats'][opponent_defense]
-    opponent_power = opponent['stats'][opponent_attack] - user['stats'][user_defense]
+    user_damage = user['stats']['damage']
+    user_defense = user['stats']['defense']
+    opponent_damage = opponent['stats']['damage']
+    opponent_defense = opponent['stats']['defense']
 
-    if user_power > opponent_power:
+    # Calculate damage dealt
+    user_dealt_damage = user_damage - (opponent_defense / 2)
+    opponent_dealt_damage = opponent_damage - (user_defense / 2)
+
+    # Apply damage to each other
+    user['stats']['current_hp'] -= opponent_dealt_damage
+    opponent['stats']['current_hp'] -= user_dealt_damage
+
+    # Determine winner
+    if user['stats']['current_hp'] > opponent['stats']['current_hp']:
         winner_id, loser_id = user_id, opponent_id
-    elif opponent_power > user_power:
+    elif opponent['stats']['current_hp'] > user['stats']['current_hp']:
         winner_id, loser_id = opponent_id, user_id
     else:
         winner_id, loser_id = random.choice([(user_id, opponent_id), (opponent_id, user_id)])
