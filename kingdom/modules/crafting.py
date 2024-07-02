@@ -7,7 +7,7 @@ from config import ADMINS
 from datetime import datetime, timedelta
 
 # Fungsi untuk menampilkan opsi crafting
-@KING.CMD("craft")
+@bot.on_message(filters.command("craft"))
 async def craft_menu(client, message):
     buttons = [
         [InlineKeyboardButton("Craft Gathering Tool", callback_data="craft_gathering_tool")],
