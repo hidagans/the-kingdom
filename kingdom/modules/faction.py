@@ -10,7 +10,7 @@ from config import *
 @KING.CALL("faction_konten")
 async def outpost_konten(client, callback_query):
     location = callback_query.message.chat.id
-    outposts_cursor = get_outpost(location)
+    outposts_cursor = await get_outpost(location)
     
     outposts = await outposts_cursor.to_list(length=None)
     
