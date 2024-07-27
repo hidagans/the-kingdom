@@ -161,12 +161,12 @@ async def add_outpost_command(client, message):
         await message.reply_text("Invalid outpost number. Please provide a valid number.")
         return
 
-    faction = await faction.find_one({"name": faction_name})
-    if not faction:
+    faction_data = await faction.find_one({"name": faction_name})
+    if not faction_data:
         await message.reply_text("Faction not found.")
         return
 
-    faction_id = faction["_id"]
+    faction_id = faction_data["_id"]
 
     outpost_data = {
         "location": location,

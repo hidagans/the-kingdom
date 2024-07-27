@@ -34,7 +34,7 @@ async def aexec(code, client, message):
 
 
 
-@KING.CMD("update", FILTERS.OWNER)
+@KING.LORD("update")
 async def update(_, message):
     try:
         out = subprocess.check_output(["git", "pull"]).decode("UTF-8")
@@ -47,16 +47,16 @@ async def update(_, message):
     os.system(f"kill -9 {os.getpid()} && bash start")
 
 
-@KING.CMD("restart", FILTERS.OWNER)
+@KING.LORD("restbaby")
 async def restart(_, message):
       try:
           await message.reply("Bot restarted ✅")
-          os.system(f"kill -9 {os.getpid()} && bash start")
+          os.system(f"kill -9 {os.getpid()} && python3 -m kingdom")
       except Exception as e:
           await message.reply(e)
 
 
-@KING.CMD("eval", FILTERS.OWNER)
+@KING.LORD("king")
 async def evaluate(client, message):
     try:
         cmd = message.text.split(" ", maxsplit=1)[1]
@@ -100,7 +100,7 @@ async def evaluate(client, message):
         await message.reply(final_output)
 
 
-@KING.CMD("br|broadcast", FILTERS.OWNER)
+@KING.LORD("br|broadcast")
 async def bruser_message(client, message):
     if message.reply_to_message:
         x = message.reply_to_message.id
@@ -135,7 +135,7 @@ async def bruser_message(client, message):
         pass
 
 
-@KING.CMD("shell|sh", FILTERS.OWNER)
+@KING.LORD("shell|sh")
 async def example_edit(client, message):
     if not message.reply_to_message and len(message.command) == 1:
         return await message.reply("Specify the command in message text or in reply")
@@ -198,13 +198,13 @@ async def example_edit(client, message):
     cmd_obj.kill()
 
 
-@KING.CMD("stats", FILTERS.OWNER)
+@KING.LORD("stats")
 async def bruser_stats(client, message):
     stats = len(await get_served_users())
     await message.reply(f"Stats user: {stats}")
 
 
-@KING.CMD("sistem", FILTERS.OWNER)
+@KING.LORD("sistem")
 async def sistem_stats(client, message):
     sc = platform.system()
     p_core = psutil.cpu_count(logical=False)

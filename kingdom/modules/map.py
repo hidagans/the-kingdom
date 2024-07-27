@@ -6,7 +6,7 @@ from config import ADMINS
 from kingdom.decorators import *
 
 # Fungsi untuk menambahkan peta dan resource
-@KING.CMD("add_map", FILTERS.OWNER)
+@KING.LORD("add_map")
 async def add_map(client, message):
     if len(message.command) < 4:
         await message.reply_text("Contoh penggunaan /add_map <Zona> <Tier> <Type>")
@@ -60,7 +60,7 @@ async def add_map(client, message):
         await message.reply_text(f"Type '{map_type}' tidak dikenali.")
 
 # Fungsi untuk menambahkan spot pengumpulan
-@KING.CMD("add_gathering_spot", FILTERS.OWNER)
+@KING.LORD("add_gathering_spot")
 async def add_gathering_spot_command(client, message):
     group_id = message.chat.id
     if len(message.command) < 2:
@@ -153,13 +153,13 @@ async def on_zone_callback(client, callback_query):
     else:
         await callback_query.answer("Zone not found.", show_alert=True)
 
-@KING.CMD("delete_maps", FILTERS.OWNER)
+@KING.LORD("delete_maps")
 async def delete_maps(client, message):
     group_id = message.chat.id
     await maps.delete_one({"location": group_id})
     await message.reply_text("Location deleted successfully!")
 
-@KING.CMD("add_royal", FILTERS.OWNER)
+@KING.LORD("add_royal")
 async def add_royal(client, message):
     location = message.chat.id
     link = await client.export_chat_invite_link(location)

@@ -98,7 +98,7 @@ async def show_inventory(client, message):
     await message.reply_text(inventory_text)
 
 # Fungsi untuk menambahkan bahan ke inventory (untuk testing/admin)
-@KING.CMD("add_resource", FILTERS.OWNER)
+@KING.LORD("add_resource")
 async def add_resource(client, message):
     if len(message.command) < 3:
         await message.reply_text("Usage: /add_resource <resource_name> <quantity>")
@@ -121,7 +121,7 @@ async def add_resource(client, message):
     await message.reply_text(f"Added {quantity} {resource_name} to your inventory.")
 
 # Fungsi untuk menambahkan merchant
-@KING.CMD("add_merchant", FILTERS.OWNER)
+@KING.LORD("add_merchant")
 async def add_merchant(client, message):
     if len(message.command) < 2:
         await message.reply_text("Usage: /add_merchant <merchant_name>")
@@ -141,7 +141,7 @@ async def add_merchant(client, message):
     await message.reply_text(f"Merchant '{merchant_name}' telah ditambahkan dengan ID {group_id}.")
 
 # Fungsi untuk memulai lelang merchant
-@KING.CMD("start_auction", FILTERS.OWNER)
+@KING.LORD("start_auction")
 async def start_auction(client, message):
     if len(message.command) < 2:
         await message.reply_text("Usage: /start_auction <merchant_name>")
@@ -194,7 +194,7 @@ async def place_bid(client, message):
     await pelelangan.update_one({"_id": current_auction["_id"]}, {"$set": {"highest_bid": amount, "highest_bidder": user_id}})
     await message.reply_text(f"Your bid of {amount} gold has been placed.")
 
-@KING.CMD("end_auction", FILTERS.OWNER)
+@KING.LORD("end_auction")
 async def end_auction(client, message):
     current_auction = await pelelangan.find_one({}, sort=[("end_time", -1)])
     

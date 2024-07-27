@@ -39,7 +39,7 @@ async def redeem(client, message):
             await message.reply_text("Invalid redeem code.")
 
 
-@KING.CMD("create_topup", FILTERS.OWNER)
+@KING.LORD("create_topup")
 async def create_topup(client, message):
     user_id = message.from_user.id
     args = message.text.split()

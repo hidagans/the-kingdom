@@ -10,9 +10,9 @@ class FILTERS:
     OWNER = filters.user(ADMINS)
 
 class KING:
-    def CMD(command, filter=FILTERS.PRIVATE):
+    def CMD(command):
         def wrapper(func):
-            @bot.on_message(filters.command(command) & filter)
+            @bot.on_message(filters.command(command))
             async def wrapped_func(client, message):
                 await func(client, message)
 
@@ -38,4 +38,14 @@ class KING:
 
             return wrapped_func
 
+        return wrapper
+    
+    def LORD(command = FILTERS.OWNER):
+        def wrapper(func):
+            @bot.on_message(filters.command(command))
+            async def wrapped_func(client, message):
+                    await func(client, message)
+
+            return wrapped_func
+        
         return wrapper
