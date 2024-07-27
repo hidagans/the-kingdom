@@ -34,7 +34,7 @@ async def aexec(code, client, message):
 
 
 
-@KING.LORD("update")
+@KING.LORD("goup")
 async def update(_, message):
     try:
         out = subprocess.check_output(["git", "pull"]).decode("UTF-8")
