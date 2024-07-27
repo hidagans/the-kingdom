@@ -10,7 +10,6 @@ outpost_attackers = {}
 async def add_faction(name):
     await faction.insert_one({"_id": ObjectId(),"name": name})
 
-
 async def get_outpost(location):
     await outpost.find_one({"location": location})
 
