@@ -52,30 +52,20 @@ async def my_profile(client, callback_query):
          InlineKeyboardButton("BACK", callback_data="start")]
     ]
 
-    if callback_query.from_user.photo:
-        photos = await client.download_media(callback_query.from_user.photo.big_file_id)
-        media = InputMediaPhoto(media=photos, caption=reply_text)
-        await client.edit_message_media(
+    try:
+        # Use the proper attributes
+        await client.edit_message_text(
             chat_id=callback_query.message.chat.id,
             message_id=callback_query.message.message_id,
-            media=media,
+            text=reply_text,
             reply_markup=InlineKeyboardMarkup(buttons)
         )
-        await aremove(photos)
-    else:
-        # Ensure `message_id` is available in `callback_query.message`
-        if hasattr(callback_query.message, 'message_id'):
-            await client.edit_message_text(
-                chat_id=callback_query.message.chat.id,
-                message_id=callback_query.message.message_id,
-                text=reply_text,
-                reply_markup=InlineKeyboardMarkup(buttons)
-            )
-        else:
-            await callback_query.message.reply_text(
-                text=reply_text,
-                reply_markup=InlineKeyboardMarkup(buttons)
-            )
+    except AttributeError:
+        # Handle case where message_id is not available
+        await callback_query.message.reply_text(
+            text=reply_text,
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
 
 
 
