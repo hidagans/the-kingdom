@@ -28,7 +28,6 @@ async def show_stats_command(client, callback_query):
     
     await callback_query.edit_message_text(reply_text, reply_markup=reply_markup)
 
-# Callback for showing user profile
 @KING.CALL("my_profile")
 async def my_profile(client, callback_query):
     user_id = callback_query.from_user.id
@@ -58,10 +57,14 @@ async def my_profile(client, callback_query):
         photos = await client.download_media(callback_query.from_user.photo.big_file_id)
         media = InputMediaPhoto(media=photos, caption=reply_text)
         await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons))
-        
         await aremove(photos)
     else:
-        await bot.edit_message_text(reply_text, reply_markup=InlineKeyboardMarkup(buttons))
+        await client.edit_message_text(
+            chat_id=callback_query.message.chat.id,
+            message_id=callback_query.message.message_id,
+            text=reply_text,
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
 
 
 
