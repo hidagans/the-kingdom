@@ -55,16 +55,28 @@ async def my_profile(client, callback_query):
     if callback_query.from_user.photo:
         photos = await client.download_media(callback_query.from_user.photo.big_file_id)
         media = InputMediaPhoto(media=photos, caption=reply_text)
-        await callback_query.edit_message_media(media=media, reply_markup=InlineKeyboardMarkup(buttons))
-        await aremove(photos)
-    else:
-        # Edit the message that triggered the callback
-        await client.edit_message_text(
+        await client.edit_message_media(
             chat_id=callback_query.message.chat.id,
             message_id=callback_query.message.message_id,
-            text=reply_text,
+            media=media,
             reply_markup=InlineKeyboardMarkup(buttons)
         )
+        await aremove(photos)
+    else:
+        # Ensure `message_id` is available in `callback_query.message`
+        if hasattr(callback_query.message, 'message_id'):
+            await client.edit_message_text(
+                chat_id=callback_query.message.chat.id,
+                message_id=callback_query.message.message_id,
+                text=reply_text,
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+        else:
+            await callback_query.message.reply_text(
+                text=reply_text,
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+
 
 
 # Command to handle /start
