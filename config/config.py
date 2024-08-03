@@ -1,7 +1,7 @@
 import os
 
 # Bot and API settings
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "7177790604:AAFT6fiTEkPAEucGOKmAOKhpDKxRyXNxyoA")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "6864421903:AAHd6q0J9iLRsFgvgAGJXupcyUSvjAFgIGg")
 API_ID = int(os.environ.get("API_ID", "21445722"))
 API_HASH = os.environ.get("API_HASH", "710f18f90849255dd85837d00d5fe85f")
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://tititgoreng:Mantulx10@cluster0.5odosuy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
@@ -12,7 +12,7 @@ XENDIT_API = os.environ.get("XENDIT_API", "xnd_production_YvvvtTET0A7JpHP38jnLgY
 XENDIT_CALLBACK_TOKEN = '6AwHb7Sv0D1q8YbimDKkXsSU3vOPdTVffmuJSXfkUltc0gkF'
 
 # Groups and channels to join
-MUST_JOIN = os.environ.get("MUST_JOIN", "thekingdom_official")
+MUST_JOIN = os.environ.get("MUST_JOIN", "regality_news")
 CHANNEL = os.environ.get("CHANNEL_ID", "-1002083228353")
 
 # GAME CONFIGURATION
