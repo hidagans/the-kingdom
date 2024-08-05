@@ -1,7 +1,7 @@
 import os
 
 # Bot and API settings
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "6864421903:AAHd6q0J9iLRsFgvgAGJXupcyUSvjAFgIGg")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "7177790604:AAFT6fiTEkPAEucGOKmAOKhpDKxRyXNxyoA")
 API_ID = int(os.environ.get("API_ID", "21445722"))
 API_HASH = os.environ.get("API_HASH", "710f18f90849255dd85837d00d5fe85f")
 MONGO_URL = os.environ.get("MONGO_URL", "mongodb+srv://tititgoreng:Mantulx10@cluster0.5odosuy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
