@@ -21,7 +21,7 @@ async def loadPlugins():
 
 async def main():
     await bot.start()
-    console.info("Bot Running")
+    console.info(f"@{bot.me.username} Bot")
     await asyncio.gather(loadPlugins(), idle())
 
 
