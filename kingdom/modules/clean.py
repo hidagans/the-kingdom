@@ -17,6 +17,5 @@ message = {
 
 @KING.CMD("clean")
 async def clean_service(client, message):
-  if message.service == "MessageServiceType.NEW_CHAT_MEMBERS":
-    await message.delete()
-    print(f"Pesan {message.id} berhasil dihapus.")
+    print("proses gan")
+    await delete_service_message(type("Message", (object,), message))
