@@ -28,8 +28,13 @@ jobs:
 
     - name: Run bot
       env:
-        TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
-        TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        API_ID: ${{ secrets.API_ID }}
+        API_HASH: ${{ secrets.API_HASH }}
+        MONGO_URL: ${{ secrets.MONGO_URL }}
+        ADMINS: ${{ secrets.ADMINS }}
+        XENDIT_API: ${{ secrets.XENDIT_API }}
+        MUST_JOIN: ${{ secrets.MUST_JOIN }}
+        CHANNEL_ID: ${{ secrets.CHANNEL_ID }}
       run: |
         python -m kingdom
